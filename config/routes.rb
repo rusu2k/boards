@@ -7,6 +7,8 @@ Rails.application.routes.draw do
     resources :board_subscriptions, only: [:create]
     resources :stories, only: [:index, :show, :create, :update, :destroy] do
       post 'assign', on: :member
+      post 'advance', on: :member
+      post 'revert', on: :member
       resources :comments, only: [:index, :show, :create, :update, :destroy]
     end
   end

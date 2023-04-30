@@ -3,6 +3,8 @@ class CommentsController < ApplicationController
   before_action :get_story
 
   def index
+    authorize Comment
+
     service = Comments::CommentsCollector.new(@story, current_user)
     comments = service.call
 
@@ -17,6 +19,8 @@ class CommentsController < ApplicationController
   end
 
   def update
+    authorize Comment
+
     service = Comments::Updater.new(current_user)
     result = service.call(params[:id], comment_params)
 
@@ -31,6 +35,8 @@ class CommentsController < ApplicationController
   end
 
   def show
+    authorize Comment
+
     presenter = Comments::CommentPresenter.new(current_user).call(params[:id]) 
         if presenter.successful? 
             render json: presenter.render, status: :ok # verific
@@ -40,6 +46,8 @@ class CommentsController < ApplicationController
   end
 
   def create
+    authorize Comment
+
     service = Comments::Creator.new(current_user)
     result = service.call(@story, comment_params)
 
@@ -54,6 +62,8 @@ class CommentsController < ApplicationController
   end
 
   def destroy
+    authorize Comment
+    
     service = Comments::Destroyer.new(current_user)
         result = service.call(params[:id])
 

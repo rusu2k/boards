@@ -12,6 +12,32 @@ class Stories::Updater
         update_story(params)
     end
 
+    def advance
+        @errors = []
+        @story = load_story(story_id)
+        current_position = @story.column.position
+        @errors << "The story is not advanceable" unless Column.exists?(position: current_position + 1)
+
+        return if !successful?
+        new_column = Column.find_by(position: current_position + 1)
+        @story.update(column_id: new_column.id)
+
+        @story if successful?
+    end
+
+    def revert
+        @errors = []
+        @story = load_story(story_id)
+        current_position = @story.column.position
+        @errors << "The story is not revertable" unless Column.exists?(position: current_position - 1)
+
+        return if !successful?
+        new_column = Column.find_by(position: current_position - 1)
+        @story.update(column_id: new_column.id)
+
+        @story if successful?
+    end
+
     def update_story(params)        
         @errors << @story.errors unless @story.update(title: params[:title], details: params[:details], due_date: params[:due_date])
         

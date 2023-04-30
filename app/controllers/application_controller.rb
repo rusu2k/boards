@@ -1,11 +1,12 @@
 class ApplicationController < ActionController::API
     include ActionController::MimeResponds
-
+    include Pundit::Authorization
+    rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
     respond_to :json
 
-    def after_sign_in_path_for scope
-        root_path
-    end
+    private
 
-    
+    def user_not_authorized
+        render json: { error: "Not authorized" }, status: :unauthorized 
+    end
 end

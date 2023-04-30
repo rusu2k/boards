@@ -2,6 +2,7 @@ class BoardsController < ApplicationController
     before_action :authenticate_user!
     
   def index
+    authorize Board
     service = Boards::BoardsCollector.new(current_user) # BoardCollector
     boards = service.call
     presenter = Boards::BoardsPresenter.new(current_user)
@@ -15,6 +16,7 @@ class BoardsController < ApplicationController
   end
   
   def show
+    authorize Board
     presenter = Boards::BoardPresenter.new(current_user).call(params[:id]) 
     if presenter.successful? 
         render json: presenter.render, status: :ok # verific
@@ -24,9 +26,11 @@ class BoardsController < ApplicationController
   end
   
   def create
+    authorize Board
     service = Boards::Creator.new(current_user)
 
     board = service.call(board_params)
+    
     presenter = Boards::BoardPresenter.new(current_user)
     presenter.call(board.id)
 
@@ -39,6 +43,8 @@ class BoardsController < ApplicationController
   end
   
   def update
+    authorize Board
+
     service = Boards::Updater.new(current_user)
     board = service.call(params[:id], board_params)
 
@@ -54,6 +60,7 @@ class BoardsController < ApplicationController
   end
 
   def destroy
+    authorize Board
     service = Boards::Destroyer.new(current_user)
     service.call(params[:id])
 

@@ -3,6 +3,8 @@ class BoardSubscriptionsController < ApplicationController
     before_action :get_board
 
     def create
+        authorize BoardSubscription
+
         service = BoardSubscriptions::BoardSubscriptionsService.new(current_user, @board)
         result = service.create_subscription(board_subscriptions_params)
 

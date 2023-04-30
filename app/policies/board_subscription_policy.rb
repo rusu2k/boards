@@ -1,0 +1,3 @@
+class BoardSubscriptionPolicy < ApplicationPolicy
+
+end

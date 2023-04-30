@@ -1,0 +1,2 @@
+class BoardPolicy < ApplicationPolicy
+end

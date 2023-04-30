@@ -10,7 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_27_085218) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_28_141020) do
+  create_table "access_controls", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "role_id", null: false
+    t.bigint "action_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action_id"], name: "index_access_controls_on_action_id"
+    t.index ["role_id", "action_id"], name: "index_access_controls_on_role_id_and_action_id", unique: true
+  end
+
+  create_table "actions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "board_subscriptions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "board_id", null: false
@@ -43,6 +58,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_27_085218) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "roles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "stories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "title"
     t.date "due_date"
@@ -59,6 +80,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_27_085218) do
     t.index ["user_id"], name: "index_stories_on_user_id"
   end
 
+  create_table "user_roles", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "role_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["role_id"], name: "index_user_roles_on_role_id"
+    t.index ["user_id"], name: "index_user_roles_on_user_id"
+  end
+
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -71,6 +101,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_27_085218) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "access_controls", "actions"
+  add_foreign_key "access_controls", "roles"
   add_foreign_key "board_subscriptions", "boards"
   add_foreign_key "board_subscriptions", "users"
   add_foreign_key "comments", "stories"
@@ -78,4 +110,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_27_085218) do
   add_foreign_key "stories", "boards"
   add_foreign_key "stories", "columns"
   add_foreign_key "stories", "users"
+  add_foreign_key "user_roles", "roles"
+  add_foreign_key "user_roles", "users"
 end
