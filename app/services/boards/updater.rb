@@ -1,7 +1,3 @@
-class Boards::Updater
-    include BaseUpdater
-
-    def model
-        Board
-    end
+class Boards::Updater < BaseUpdater
+    include Boards::CommonHelper
 end

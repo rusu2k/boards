@@ -7,5 +7,5 @@ class Story < ApplicationRecord
   belongs_to :column
   belongs_to :board
   belongs_to :user, optional: true
-  has_many :comments
+  has_many :comments, :dependent => :delete_all 
 end

@@ -3,7 +3,7 @@ class User < ApplicationRecord
   has_many :boards, through: :board_subscriptions
   has_many :stories
 
-  has_many :user_roles
+  has_many :user_roles, :dependent => :delete_all 
   has_many :roles, through: :user_roles
   
   

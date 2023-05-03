@@ -1,10 +1,4 @@
 
-class Boards::Destroyer
-    include BaseDestroyer
-
-    private
-  
-    def model
-      Board
-    end
+class Boards::Destroyer < BaseDestroyer
+    include Boards::CommonHelper
 end

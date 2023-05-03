@@ -14,6 +14,7 @@ class BaseDestroyer < BaseCommon
     end
   
     def destroy_model
+      puts @record.inspect
       @record.destroy
       return @record if successful?
 

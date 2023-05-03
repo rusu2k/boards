@@ -1,7 +1,3 @@
-class Boards::Creator
-    include BaseCreator
-
-    def model
-        Board
-    end
+class Boards::Creator < BaseCreator
+    include Boards::CommonHelper
 end

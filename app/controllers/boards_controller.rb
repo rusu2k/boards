@@ -30,10 +30,11 @@ class BoardsController < ApplicationController
     service = Boards::Creator.new
 
     board = service.call(board_params)
-    BoardSubscriptions::Creator.new(board).call({"user_id": current_user.id})
-    
+    if board.present?
+      BoardSubscriptions::Creator.new(board).call({"user_id": current_user.id})
+    end
     presenter = Boards::BoardPresenter.new
-    presenter.call(board.id)
+    presenter.call(board&.id)
 
     if service.successful? && presenter.successful?
         render json: presenter.render, status: :created
@@ -47,10 +48,10 @@ class BoardsController < ApplicationController
     authorize @board
 
     service = Boards::Updater.new
-    board = service.call(params[:id], board_params)
+    board = service.call(@board, board_params)
 
     presenter = Boards::BoardPresenter.new
-    presenter.call(board.id)
+    presenter.call(board&.id)
 
     if service.successful? && presenter.successful?
         render json: presenter.render, status: :accepted
@@ -63,7 +64,7 @@ class BoardsController < ApplicationController
   def destroy
     authorize @board
     service = Boards::Destroyer.new
-    service.call(params[:id])
+    service.call(@board)
 
     if service.successful?
         render json: { message: 'Board Deleted.' }, status: :ok
