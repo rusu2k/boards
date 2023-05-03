@@ -7,7 +7,7 @@ class Boards::BoardsPresenter
         result = []
 
         boards.each do |board|
-            board_presenter.call(board.id)
+            board_presenter.call(board)
             check_board_presenter(board_presenter)
             result << board_presenter.render
         end

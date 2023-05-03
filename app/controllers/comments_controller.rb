@@ -26,7 +26,7 @@ class CommentsController < ApplicationController
     result = service.call(@comment, comment_params)
 
     presenter = Comments::CommentPresenter.new
-    presenter.call(result&.id)
+    presenter.call(result)
 
     if service.successful? && presenter.successful?
         render json: presenter.render, status: :accepted
@@ -36,12 +36,11 @@ class CommentsController < ApplicationController
   end
 
   def show
-    puts @comment.inspect
     authorize @comment
 
-    presenter = Comments::CommentPresenter.new.call(params[:id]) 
+    presenter = Comments::CommentPresenter.new.call(@comment) 
         if presenter.successful? 
-            render json: presenter.render, status: :ok # verific
+            render json: presenter.render, status: :ok
         else
             render json: { errors: presenter.errors }, status: :not_found
         end
@@ -54,7 +53,7 @@ class CommentsController < ApplicationController
     result = service.call(comment_params)
 
     presenter = Comments::CommentPresenter.new
-    presenter.call(result&.id)
+    presenter.call(result)
 
     if service.successful? && presenter.successful?
         render json: presenter.render, status: :created

@@ -17,7 +17,7 @@ class BoardsController < ApplicationController
   
   def show
     authorize @board
-    presenter = Boards::BoardPresenter.new.call(params[:id]) 
+    presenter = Boards::BoardPresenter.new.call(@board) 
     if presenter.successful? 
         render json: presenter.render, status: :ok # verific
     else
@@ -34,7 +34,7 @@ class BoardsController < ApplicationController
       BoardSubscriptions::Creator.new(board).call({"user_id": current_user.id})
     end
     presenter = Boards::BoardPresenter.new
-    presenter.call(board&.id)
+    presenter.call(board)
 
     if service.successful? && presenter.successful?
         render json: presenter.render, status: :created
@@ -51,7 +51,7 @@ class BoardsController < ApplicationController
     board = service.call(@board, board_params)
 
     presenter = Boards::BoardPresenter.new
-    presenter.call(board&.id)
+    presenter.call(board)
 
     if service.successful? && presenter.successful?
         render json: presenter.render, status: :accepted

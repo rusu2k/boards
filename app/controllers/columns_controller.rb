@@ -23,7 +23,7 @@ class ColumnsController < ApplicationController
       result = service.call(column_params)
   
       presenter = Columns::ColumnPresenter.new
-      presenter.call(result&.id)
+      presenter.call(result)
   
       if service.successful? && presenter.successful?
           render json: presenter.render, status: :created
@@ -38,7 +38,7 @@ class ColumnsController < ApplicationController
       result = service.call(@column, column_params)
   
       presenter = Columns::ColumnPresenter.new
-      presenter.call(result&.id)
+      presenter.call(result)
   
       if service.successful? && presenter.successful?
           render json: presenter.render, status: :accepted
@@ -49,7 +49,7 @@ class ColumnsController < ApplicationController
   
     def show
       authorize @column
-      presenter = Columns::ColumnPresenter.new.call(params[:id]) 
+      presenter = Columns::ColumnPresenter.new.call(@column) 
       if presenter.successful? 
         render json: presenter.render, status: :ok
       else

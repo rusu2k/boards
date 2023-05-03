@@ -7,7 +7,7 @@ class Columns::ColumnsPresenter
         result = []
 
         columns.each do |column|
-            column_presenter.call(column.id)
+            column_presenter.call(column)
             check_column_presenter(column_presenter)
             result << column_presenter.render
         end

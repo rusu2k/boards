@@ -1,38 +1,16 @@
-class Stories::StoryPresenter
-    attr_reader :errors
-
-    def call(story_id)
-        @errors = []
-        @story = load_story(story_id)
-        check_story(@story)
-
-        self
-    end
-
-    def check_story(story)
-        @errors << "story could not be found in DB" unless story.present?
-    end
-
-    def load_story(story_id)
-        @errors << "missing story id" unless story_id.present?
-        return unless successful?
-        Story.find_by(id: story_id)
-    end
+class Stories::StoryPresenter < BasePresenter
+    include Stories::CommonHelper
   
     def render
         {
-            id: @story.id,
-            title: @story.title,
-            details: @story.details,
-            due_date: @story.due_date,
-            status: @story.column.title,
-            user: @story.user_id,
-            comments: Comments::CommentsPresenter.new.call(@story.comments)
+            id: @record.id,
+            title: @record.title,
+            details: @record.details,
+            due_date: @record.due_date,
+            status: @record.column.title,
+            user: @record.user_id,
+            comments: Comments::CommentsPresenter.new.call(@record.comments)
         }
-    end
-
-    def successful?
-        @errors.blank?
     end
 
   end

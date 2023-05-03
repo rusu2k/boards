@@ -9,7 +9,7 @@ class Comments::CommentsPresenter
         comment_presenter = Comments::CommentPresenter.new
         
         comments.each do |comment|
-            comment_presenter.call(comment.id)
+            comment_presenter.call(comment)
             check_comment_presenter(comment_presenter)
             result << comment_presenter.render
         end

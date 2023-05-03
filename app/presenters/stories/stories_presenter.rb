@@ -10,7 +10,7 @@ class Stories::StoriesPresenter
         
 
         stories.each do |story|
-            story_presenter.call(story.id)
+            story_presenter.call(story)
             check_story_presenter(story_presenter)
             result << story_presenter.render
         end

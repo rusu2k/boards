@@ -20,7 +20,7 @@ class StoriesController < ApplicationController
     def show
         authorize @story if @story.present?
 
-        presenter = Stories::StoryPresenter.new.call(params[:id]) 
+        presenter = Stories::StoryPresenter.new.call(@story) 
         if presenter.successful? 
             render json: presenter.render, status: :ok # verific
         else
@@ -35,7 +35,7 @@ class StoriesController < ApplicationController
         result = service.call(story_params)
 
         presenter = Stories::StoryPresenter.new
-        presenter.call(result&.id)
+        presenter.call(result)
 
         if service.successful? && presenter.successful?
             render json: presenter.render, status: :created
@@ -51,7 +51,7 @@ class StoriesController < ApplicationController
         result = service.call(@story, story_params)
 
         presenter = Stories::StoryPresenter.new
-        presenter.call(result&.id)
+        presenter.call(result)
 
         if service.successful? && presenter.successful?
             render json: presenter.render, status: :accepted
@@ -94,7 +94,7 @@ class StoriesController < ApplicationController
         result = service.call(@story, true)
 
         presenter = Stories::StoryPresenter.new
-        presenter.call(result&.id)
+        presenter.call(result)
 
         if service.successful? && presenter.successful?
             render json: presenter.render, status: :accepted
@@ -110,7 +110,7 @@ class StoriesController < ApplicationController
         result = service.call(@story, false)
 
         presenter = Stories::StoryPresenter.new
-        presenter.call(result&.id)
+        presenter.call(result)
 
         if service.successful? && presenter.successful?
             render json: presenter.render, status: :accepted

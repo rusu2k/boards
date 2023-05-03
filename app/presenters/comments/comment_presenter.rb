@@ -1,35 +1,13 @@
-class Comments::CommentPresenter
-    attr_reader :errors
-
-    def call(comment_id)
-        @errors = []
-        @comment = load_comment(comment_id)
-        check_comment
-
-        self
-    end
-
-    def check_comment
-        @errors << "comment could not be found in DB" unless @comment.present?
-    end
-
-    def load_comment(comment_id)
-        @errors << "missing comment id" unless comment_id.present?
-        return unless successful?
-        Comment.find_by(id: comment_id)
-    end
+class Comments::CommentPresenter < BasePresenter
+    include Comments::CommonHelper
   
     def render
         {
-            id: @comment.id,
-            content: @comment.content,
-            user_id: @comment.user_id,
-            story_id: @comment.story_id
+            id: @record.id,
+            content: @record.content,
+            user_id: @record.user_id,
+            story_id: @record.story_id
         }
-    end
-
-    def successful?
-        @errors.blank?
     end
 
   end
