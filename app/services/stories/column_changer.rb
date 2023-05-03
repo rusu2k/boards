@@ -3,16 +3,18 @@ class Stories::ColumnChanger
 
     # Cache max and min position
     def initialize(stories_updater: Stories::Updater)
-        @stories_updater = stories_updater
+        @stories_updater = stories_updater.new
     end
-    # APELEZ UPDATERU
 
-    def call(story, advance: true)
+    def call(story, advance)
         @errors = []
         @story = story
         check_story(story)
         
+        return if !successful?
+
         return next_column if advance
+
         previous_column
     end
 
@@ -23,8 +25,7 @@ class Stories::ColumnChanger
 
         return if !successful?
         new_column = Column.find_by(position: current_position + 1)
-        @stories_updater.call()
-        @story.update(column_id: new_column.id)
+        @stories_updater.call(@story, {column_id: new_column.id})
 
         @story if successful?
     end
@@ -36,7 +37,7 @@ class Stories::ColumnChanger
 
         return if !successful?
         new_column = Column.find_by(position: current_position - 1)
-        @story.update(column_id: new_column.id)
+        @stories_updater.call(@story, {column_id: new_column.id})
 
         @story if successful?
     end

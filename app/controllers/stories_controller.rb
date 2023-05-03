@@ -107,7 +107,7 @@ class StoriesController < ApplicationController
         authorize @story
 
         service = Stories::ColumnChanger.new
-        result = service.call(story, false)
+        result = service.call(@story, false)
 
         presenter = Stories::StoryPresenter.new
         presenter.call(result&.id)
