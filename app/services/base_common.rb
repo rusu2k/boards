@@ -5,6 +5,10 @@ class BaseCommon
       @errors << record.errors if record.errors.present?
     end
 
+    def call
+      raise "Must be implemented in inheriting class"
+    end
+
     def model
         raise NotImplementedError, 'model method must be implemented in child class'
     end

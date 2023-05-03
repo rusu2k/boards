@@ -48,10 +48,7 @@ class StoriesController < ApplicationController
         authorize @story
 
         service = Stories::Updater.new
-        puts story_params
-        result = service.call(params[:id], story_params)
-
-        
+        result = service.call(@story, story_params)
 
         presenter = Stories::StoryPresenter.new
         presenter.call(result&.id)

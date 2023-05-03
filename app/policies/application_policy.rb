@@ -10,7 +10,7 @@ class ApplicationPolicy
 
   # INTERN CONVENTION FOR ACCESS CONTROLS
   # ACTION'S NAME IS SET IN FORMAT:   <METHOD NAME>_<MODEL NAME>
-  def method_missing(m, *args, **args, &block)
+  def method_missing(m, *args, &block)
     action_name = "#{m.to_s.gsub("?","")}_#{self.class.name.underscore.gsub("_policy", "")}" # un snakeCase
     #puts has_access?(action_name)
     has_access?(action_name)
