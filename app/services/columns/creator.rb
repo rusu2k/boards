@@ -1,7 +1,3 @@
-class Columns::Creator
-    include BaseCreator
-
-    def model
-        Column
-    end
+class Columns::Creator < BaseCreator
+    include Columns::CommonHelper
 end

@@ -22,7 +22,8 @@ class Columns::ColumnPresenter
     def render
         {
             id: @column.id,
-            title: @column.title
+            title: @column.title,
+            position: @column.position
         }
     end
 

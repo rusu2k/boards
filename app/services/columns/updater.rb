@@ -1,7 +1,3 @@
-class Columns::Updater
-    include BaseUpdater
-
-    def model
-        Column
-    end
+class Columns::Updater < BaseUpdater
+    include Columns::CommonHelper
 end
