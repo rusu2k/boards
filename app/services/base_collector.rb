@@ -1,15 +1,12 @@
 class BaseCollector
-    attr_reader :errors, :collection
+  attr_reader :errors, :collection
     
-    def initialize
-      
-    end
-  
+  def call
+    @errors = []
     
+    @collection = model.all
+    @collection = @collection.where()
 
-    
-    def successful?
-      @errors.blank?
-    end
-  
+  end
+
   end

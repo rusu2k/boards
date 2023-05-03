@@ -1,7 +1,3 @@
-class Comments::Updater
-    include BaseUpdater
-
-    def model
-        Comment
-    end
+class Comments::Updater < BaseUpdater
+    include Comments::CommonHelper
 end

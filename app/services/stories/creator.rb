@@ -6,9 +6,7 @@ class Stories::Creator < BaseCreator
     end
 
     def call(params)
-        puts params
         params[:board_id] = @board.id
-        puts params
         super
     end
 
