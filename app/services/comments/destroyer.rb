@@ -1,10 +1,3 @@
-
-class Comments::Destroyer
-    include BaseDestroyer
-
-    private
-  
-    def model
-      Comment
-    end
+class Comments::Destroyer < BaseDestroyer
+    include Comments::CommonHelper
 end

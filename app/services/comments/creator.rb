@@ -1,17 +1,14 @@
-class Comments::Creator
-    include BaseCreator
+class Comments::Creator < BaseCreator
+    include Comments::CommonHelper
 
-    def initialize(user)
+    def initialize(user, story)
         @user = user
+        @story = story
     end
   
-    def call(story, params)
-        @errors = []
-        record = story.comments.build(params.merge(user_id: @user.id))
-        save_record(record)
-    end
-
-    def model
-        Comment
+    def call(params)
+        params[:story_id] = @story.id
+        params[:user_id] = @user.id
+        super
     end
 end

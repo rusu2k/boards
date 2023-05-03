@@ -23,7 +23,7 @@ class CommentsController < ApplicationController
     authorize @comment
 
     service = Comments::Updater.new
-    result = service.call(params[:id], comment_params)
+    result = service.call(@comment, comment_params)
 
     presenter = Comments::CommentPresenter.new
     presenter.call(result&.id)
@@ -50,8 +50,8 @@ class CommentsController < ApplicationController
   def create
     authorize @story
 
-    service = Comments::Creator.new(current_user)
-    result = service.call(@story, comment_params)
+    service = Comments::Creator.new(current_user, @story)
+    result = service.call(comment_params)
 
     presenter = Comments::CommentPresenter.new
     presenter.call(result&.id)
@@ -67,7 +67,7 @@ class CommentsController < ApplicationController
     authorize @comment
     
     service = Comments::Destroyer.new
-        result = service.call(params[:id])
+        result = service.call(@comment)
 
         if service.successful?
             render json: { message: 'Comment Deleted.' }, status: :ok
