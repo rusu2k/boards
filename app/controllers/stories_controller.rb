@@ -64,7 +64,7 @@ class StoriesController < ApplicationController
         authorize @story
 
         service = Stories::Destroyer.new
-        result = service.call(params[:id])
+        result = service.call(@story)
 
         if service.successful?
             render json: { message: 'Story Deleted.' }, status: :ok

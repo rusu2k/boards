@@ -1,10 +1,3 @@
-
-class Stories::Destroyer
-    include BaseDestroyer
-
-    private
-  
-    def model
-      Story
-    end
+class Stories::Destroyer < BaseDestroyer
+  include Stories::CommonHelper
 end
