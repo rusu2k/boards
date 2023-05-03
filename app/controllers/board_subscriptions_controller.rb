@@ -1,12 +1,12 @@
 class BoardSubscriptionsController < ApplicationController
     before_action :authenticate_user!
-    before_action :get_board
+    before_action :get_board, only: [:create]
 
     def create
-        authorize BoardSubscription
+        authorize @board
 
-        service = BoardSubscriptions::BoardSubscriptionsService.new(current_user, @board)
-        result = service.create_subscription(board_subscriptions_params)
+        service = BoardSubscriptions::Creator.new(@board)
+        result = service.call(board_subscriptions_params)
 
         # presenter
         
@@ -19,7 +19,7 @@ class BoardSubscriptionsController < ApplicationController
 
     private
     def board_subscriptions_params
-        params.require(:board_subscription).permit(:user_id)
+        params.require(:board_subscription).permit(policy(BoardSubscription).permitted_attributes)
     end
 
     def get_board

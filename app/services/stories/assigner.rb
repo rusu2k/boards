@@ -1,17 +1,16 @@
 class Stories::Assigner
     attr_reader :errors
 
-    def initialize(current_user, story)
-        @current_user = current_user
+    def initialize(story)
         @story = story
     end
 
-    def call(user_id)
+    def call(params)
         @errors = []
         check_story
         return false unless successful?
-        check_user(user_id)
-        @story.update(user_id: user_id) if successful?
+        check_user(params[:user_id])
+        @story.update(user_id: params[:user_id]) if successful?
 
     end
 

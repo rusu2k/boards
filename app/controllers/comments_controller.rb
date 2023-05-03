@@ -1,15 +1,16 @@
 class CommentsController < ApplicationController
   before_action :authenticate_user!
   before_action :get_story
+  before_action :get_comment, only: [:show, :update, :destroy]
 
   def index
-    authorize Comment
+    authorize @story
 
-    service = Comments::CommentsCollector.new(@story, current_user)
+    service = Comments::CommentsCollector.new(@story)
     comments = service.call
 
-    presenter = Comments::CommentsPresenter.new(current_user)
-    comments = presenter.call(comments, @story)
+    presenter = Comments::CommentsPresenter.new
+    comments = presenter.call(comments)
 
     if service.successful? && presenter.successful?
       render json: comments, status: :ok
@@ -19,12 +20,12 @@ class CommentsController < ApplicationController
   end
 
   def update
-    authorize Comment
+    authorize @comment
 
-    service = Comments::Updater.new(current_user)
+    service = Comments::Updater.new
     result = service.call(params[:id], comment_params)
 
-    presenter = Comments::CommentPresenter.new(current_user)
+    presenter = Comments::CommentPresenter.new
     presenter.call(result&.id)
 
     if service.successful? && presenter.successful?
@@ -35,9 +36,10 @@ class CommentsController < ApplicationController
   end
 
   def show
-    authorize Comment
+    puts @comment.inspect
+    authorize @comment
 
-    presenter = Comments::CommentPresenter.new(current_user).call(params[:id]) 
+    presenter = Comments::CommentPresenter.new.call(params[:id]) 
         if presenter.successful? 
             render json: presenter.render, status: :ok # verific
         else
@@ -46,12 +48,12 @@ class CommentsController < ApplicationController
   end
 
   def create
-    authorize Comment
+    authorize @story
 
     service = Comments::Creator.new(current_user)
     result = service.call(@story, comment_params)
 
-    presenter = Comments::CommentPresenter.new(current_user)
+    presenter = Comments::CommentPresenter.new
     presenter.call(result&.id)
 
     if service.successful? && presenter.successful?
@@ -62,9 +64,9 @@ class CommentsController < ApplicationController
   end
 
   def destroy
-    authorize Comment
+    authorize @comment
     
-    service = Comments::Destroyer.new(current_user)
+    service = Comments::Destroyer.new
         result = service.call(params[:id])
 
         if service.successful?
@@ -76,12 +78,14 @@ class CommentsController < ApplicationController
 
   private
   def comment_params
-    params.require(:comment).permit(
-      :content
-    )
+    params.require(:comment).permit(policy(Comment).permitted_attributes)
   end
 
   def get_story
     @story = Story.find_by(id: params[:story_id])
+  end
+
+  def get_comment
+    @comment = Comment.find_by(id: params[:id])
   end
 end

@@ -1,7 +1,7 @@
-class Comments::Updater
+class Columns::Updater
     include BaseUpdater
 
     def model
-        Comment
+        Column
     end
 end

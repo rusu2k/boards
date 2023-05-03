@@ -1,8 +1,7 @@
 class Stories::StoriesCollector
     attr_reader :errors
 
-    def initialize(board, current_user)
-        @current_user = current_user
+    def initialize(board)
         @board = board
     end
   
@@ -11,9 +10,7 @@ class Stories::StoriesCollector
         @stories = []
         
         check_board
-        @board.stories unless @board.blank?
-
-        
+        @board.stories unless !successful?
     end
 
     def check_board

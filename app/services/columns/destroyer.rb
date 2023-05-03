@@ -1,10 +1,10 @@
 
-class Stories::Destroyer
+class Columns::Destroyer
     include BaseDestroyer
 
     private
   
     def model
-      Story
+      Column
     end
 end

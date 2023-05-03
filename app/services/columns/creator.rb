@@ -1,7 +1,7 @@
-class Boards::Creator
+class Columns::Creator
     include BaseCreator
 
     def model
-        Board
+        Column
     end
 end

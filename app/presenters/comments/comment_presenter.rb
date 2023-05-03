@@ -1,10 +1,6 @@
 class Comments::CommentPresenter
     attr_reader :errors
 
-    def initialize(current_user)
-        @current_user = current_user
-    end
-
     def call(comment_id)
         @errors = []
         @comment = load_comment(comment_id)

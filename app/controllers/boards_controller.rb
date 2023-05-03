@@ -1,23 +1,23 @@
 class BoardsController < ApplicationController
     before_action :authenticate_user!
+    before_action :get_board, only: [:show, :update, :destroy]
     
   def index
     authorize Board
     service = Boards::BoardsCollector.new(current_user) # BoardCollector
     boards = service.call
-    presenter = Boards::BoardsPresenter.new(current_user)
+    presenter = Boards::BoardsPresenter.new
     boards = presenter.call(boards)
     if service.successful? && presenter.successful?
         render json: boards, status: :ok
     else
       render json: { errors: service.errors + presenter.errors }, status: :bad_request
     end
-    
   end
   
   def show
-    authorize Board
-    presenter = Boards::BoardPresenter.new(current_user).call(params[:id]) 
+    authorize @board
+    presenter = Boards::BoardPresenter.new.call(params[:id]) 
     if presenter.successful? 
         render json: presenter.render, status: :ok # verific
     else
@@ -27,11 +27,12 @@ class BoardsController < ApplicationController
   
   def create
     authorize Board
-    service = Boards::Creator.new(current_user)
+    service = Boards::Creator.new
 
     board = service.call(board_params)
+    BoardSubscriptions::Creator.new(board).call({"user_id": current_user.id})
     
-    presenter = Boards::BoardPresenter.new(current_user)
+    presenter = Boards::BoardPresenter.new
     presenter.call(board.id)
 
     if service.successful? && presenter.successful?
@@ -43,12 +44,12 @@ class BoardsController < ApplicationController
   end
   
   def update
-    authorize Board
+    authorize @board
 
-    service = Boards::Updater.new(current_user)
+    service = Boards::Updater.new
     board = service.call(params[:id], board_params)
 
-    presenter = Boards::BoardPresenter.new(current_user)
+    presenter = Boards::BoardPresenter.new
     presenter.call(board.id)
 
     if service.successful? && presenter.successful?
@@ -60,8 +61,8 @@ class BoardsController < ApplicationController
   end
 
   def destroy
-    authorize Board
-    service = Boards::Destroyer.new(current_user)
+    authorize @board
+    service = Boards::Destroyer.new
     service.call(params[:id])
 
     if service.successful?
@@ -73,8 +74,11 @@ class BoardsController < ApplicationController
 
   private
   def board_params
-    params.require(:board).permit(  # permit - important security feature : makes so that it accepts only the specified number of parameters
-      :title)
+    params.require(:board).permit(policy(Board).permitted_attributes)
+  end
+
+  def get_board
+    @board = Board.find_by(id: params[:id])
   end
   
 

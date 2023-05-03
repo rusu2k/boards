@@ -1,37 +1,10 @@
+
 class Boards::Destroyer
-    attr_reader :errors
+    include BaseDestroyer
 
-    def initialize(current_user)
-        @current_user = current_user
-    end
+    private
   
-    def call(board_id)
-        @errors = []
-        @board = load_board(board_id)
-        
-        destroy_board
-
+    def model
+      Board
     end
-
-    def destroy_board        
-        check_board(@board)
-        @board.destroy
-        return @board if successful?
-    end
-
-    def check_board(board)
-        @errors << "boards could not be found in DB" unless board.present?
-        @errors << "board not accessible" if @current_user.id.blank? # != board.user_id # daca permisiunile de pe board nu includ user_id logat
-    end
-
-    def load_board(board_id)
-        @errors << "missing board id" unless board_id.present?
-        return unless successful?
-        Board.find_by(id: board_id)
-    end
-
-    def successful?
-        @errors.blank?
-    end
-
 end

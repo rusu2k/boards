@@ -1,14 +1,14 @@
 class ColumnsController < ApplicationController
-    before_action :authenticate_user!
-    before_action :get_board
-    before_action :get_column, only: [:show, :update, :destroy]
+  before_action :authenticate_user!
+  before_action :get_column, only: [:show, :update, :destroy]
+  before_action :get_board
   
     # def index
     #   authorize Column
-    #   service = Columns::ColumnsCollector.new(@board, current_user)
+    #   service = Columns::ColumnsCollector.new
     #   columns = service.call
   
-    #   presenter = Columns::ColumnsPresenter.new(current_user)
+    #   presenter = Columns::ColumnsPresenter.new
     #   columns = presenter.call(columns)
   
     #   if service.successful? && presenter.successful?
@@ -20,10 +20,10 @@ class ColumnsController < ApplicationController
   
     # def create
     #   authorize Column
-    #   service = Columns::Creator.new(current_user)
-    #   result = service.call(@board, column_params)
+    #   service = Columns::Creator.new
+    #   result = service.call(column_params)
   
-    #   presenter = Columns::ColumnPresenter.new(current_user)
+    #   presenter = Columns::ColumnPresenter.new
     #   presenter.call(result&.id)
   
     #   if service.successful? && presenter.successful?
@@ -35,10 +35,10 @@ class ColumnsController < ApplicationController
   
     # def update
     #   authorize Column
-    #   service = Columns::Updater.new(current_user)
+    #   service = Columns::Updater.new
     #   result = service.call(@column, column_params)
   
-    #   presenter = Columns::ColumnPresenter.new(current_user)
+    #   presenter = Columns::ColumnPresenter.new
     #   presenter.call(result&.id)
   
     #   if service.successful? && presenter.successful?
@@ -48,19 +48,19 @@ class ColumnsController < ApplicationController
     #   end
     # end
   
-    # def show
-    #   authorize Column
-    #   presenter = Columns::ColumnPresenter.new(current_user).call(params[:id]) 
-    #   if presenter.successful? 
-    #     render json: presenter.render, status: :ok
-    #   else
-    #     render json: { errors: presenter.errors }, status: :not_found
-    #   end
-    # end
+    def show
+      authorize @column
+      presenter = Columns::ColumnPresenter.new.call(params[:id]) 
+      if presenter.successful? 
+        render json: presenter.render, status: :ok
+      else
+        render json: { errors: presenter.errors }, status: :not_found
+      end
+    end
   
     # def destroy
     #   authorize Column
-    #   service = Columns::Destroyer.new(current_user)
+    #   service = Columns::Destroyer.new
     #   result = service.call(@column)
   
     #   if service.successful?
@@ -70,18 +70,15 @@ class ColumnsController < ApplicationController
     #   end
     # end
   
-    # private
-  
-    # def column_params
-    #   params.require(:column).permit(:title, :position)
-    # end
-  
-    # def get_board
-    #   @board = Board.find(params[:board_id])
-    # end
-  
-    # def get_column
-    #   @column = @board.columns.find(params[:id])
-    # end
+  private
+
+  def get_board
+    @board = Board.find_by(id: params[:board_id])
   end
+
+  def get_column
+    @column = Column.find_by(id: params[:id])
+  end
+
+end
   

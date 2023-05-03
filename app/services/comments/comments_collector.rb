@@ -1,8 +1,7 @@
 class Comments::CommentsCollector
     attr_reader :errors
 
-    def initialize(story, current_user)
-        @current_user = current_user
+    def initialize(story)
         @story = story
     end
   
@@ -11,7 +10,7 @@ class Comments::CommentsCollector
         @comments = []
         
         check_story
-        @story.comments unless @story.blank?
+        @story.comments unless !successful?
     end
 
     def check_story

@@ -1,11 +1,8 @@
 class Boards::BoardsPresenter
-    def initialize(current_user)
-        @current_user = current_user
-    end
-
+    attr_reader :errors
 
     def call(boards)
-        board_presenter = Boards::BoardPresenter.new(@current_user)
+        board_presenter = Boards::BoardPresenter.new
         @errors = []
         result = []
 

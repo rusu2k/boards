@@ -1,18 +1,12 @@
 class Stories::StoriesPresenter
     attr_reader :errors
 
-    def initialize(current_user)
-        @current_user = current_user
-    end
-
-
-    def call(board, stories)
+    def call(stories)
         @errors = []
         result = []
-        check_board(board)
 
         return if !successful?
-        story_presenter = Stories::StoryPresenter.new(@current_user)
+        story_presenter = Stories::StoryPresenter.new
         
 
         stories.each do |story|
@@ -21,10 +15,6 @@ class Stories::StoriesPresenter
             result << story_presenter.render
         end
         result
-    end
-
-    def check_board(board)
-        @errors << "Board not found" unless board.present?
     end
 
     def check_story_presenter(story_presenter)

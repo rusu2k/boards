@@ -6,9 +6,9 @@ Rails.application.routes.draw do
   resources :boards, only: [:index, :show, :create, :update, :destroy] do
     resources :board_subscriptions, only: [:create]
     resources :stories, only: [:index, :show, :create, :update, :destroy] do
-      post 'assign', on: :member
-      post 'advance', on: :member
-      post 'revert', on: :member
+      put 'assign', on: :member
+      post 'next_column', on: :member
+      post 'previous_column', on: :member
       resources :comments, only: [:index, :show, :create, :update, :destroy]
     end
   end

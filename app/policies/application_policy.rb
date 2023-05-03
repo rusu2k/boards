@@ -6,48 +6,20 @@ class ApplicationPolicy
   def initialize(user, record)
     @user = user
     @record = record
-
   end
 
   # INTERN CONVENTION FOR ACCESS CONTROLS
   # ACTION'S NAME IS SET IN FORMAT:   <METHOD NAME>_<MODEL NAME>
-
-  def index?
-    action_name = "#{__method__[0..-2]}_#{self.class.name[0..-7]}"
-    has_access?(action_name) #&& has_subscription?
-  end
-
-  def show?
-    action_name = "#{__method__[0..-2]}_#{self.class.name[0..-7]}"
-    has_access?(action_name) #&& has_subscription?
-  end
-
-  def create?
-    action_name = "#{__method__[0..-2]}_#{self.class.name[0..-7]}"
-    has_access?(action_name) #&& has_subscription?
-  end
-
-  def new?
-    action_name = "#{__method__[0..-2]}_#{self.class.name[0..-7]}"
+  def method_missing(m, *args, **args, &block)
+    action_name = "#{m.to_s.gsub("?","")}_#{self.class.name.underscore.gsub("_policy", "")}" # un snakeCase
+    #puts has_access?(action_name)
     has_access?(action_name)
   end
 
-  def update?
-    action_name = "#{__method__[0..-2]}_#{self.class.name[0..-7]}"
-    has_access?(action_name) #&& has_subscription?
-  end
-
-  def edit?
-    action_name = "#{__method__[0..-2]}_#{self.class.name[0..-7]}"
-    has_access?(action_name)
-  end
-
-  def destroy?
-    action_name = "#{__method__[0..-2]}_#{self.class.name[0..-7]}"
-    has_access?(action_name) #&& has_subscription?
-  end
 
   class Scope
+    attr_reader :user, :scope
+
     def initialize(user, scope)
       @user = user
       @scope = scope
@@ -59,28 +31,22 @@ class ApplicationPolicy
 
     private
 
-    attr_reader :user, :scope
+    
   end
 
   private
 
   def has_access?(action)
-    puts action
-    action_id = Action.find_by(name: action).id
+    return false if action.blank?
 
-    role_ids = @user.roles.map { |role| role.id }
-    role_ids.each do |role_id|
-      return true if AccessControl.exists?(action_id: action_id, role_id: role_id)
+    action_id = Action.find_by(name: action)&.id
+    return false if action_id.blank?
+    
+    @user.roles.each do |role|
+      return true if AccessControl.exists?(action_id: action_id, role_id: role.id)
     end
     false
   end
 
-
-  def has_subscription?
-    user_id = @user.id
-    # first condition - for Boards Index/Create methods - no board_id
-    return true if BoardSubscription.exists?(user_id: user_id, board_id: @board_id) || @board_id.blank?
-    false
-  end
 
 end

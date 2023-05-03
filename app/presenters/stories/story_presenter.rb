@@ -1,10 +1,6 @@
 class Stories::StoryPresenter
     attr_reader :errors
 
-    def initialize(current_user)
-        @current_user = current_user
-    end
-
     def call(story_id)
         @errors = []
         @story = load_story(story_id)
@@ -31,7 +27,7 @@ class Stories::StoryPresenter
             due_date: @story.due_date,
             status: @story.column.title,
             user: @story.user_id,
-            comments: Comments::CommentsPresenter.new(@current_user).call(@story.comments, @story)
+            comments: Comments::CommentsPresenter.new.call(@story.comments)
         }
     end
 

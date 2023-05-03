@@ -1,15 +1,15 @@
 class StoriesController < ApplicationController
     before_action :authenticate_user!
     before_action :get_board
-    before_action :get_story
+    before_action :get_story, only: [:show, :update, :destroy, :assign, :next_column, :previous_column]
     
     def index
-        authorize Story
+        authorize @board
         
-        service = Stories::StoriesCollector.new(@board, current_user) # storyCollector
+        service = Stories::StoriesCollector.new(@board) # storyCollector
         stories = service.call
-        presenter = Stories::StoriesPresenter.new(@current_user) 
-        stories = presenter.call(@board, stories)
+        presenter = Stories::StoriesPresenter.new 
+        stories = presenter.call(stories)
         if service.successful? && presenter.successful?
             render json: stories, status: :ok
         else
@@ -18,9 +18,9 @@ class StoriesController < ApplicationController
     end
     
     def show
-        authorize Story
+        authorize @story if @story.present?
 
-        presenter = Stories::StoryPresenter.new(current_user).call(params[:id]) 
+        presenter = Stories::StoryPresenter.new.call(params[:id]) 
         if presenter.successful? 
             render json: presenter.render, status: :ok # verific
         else
@@ -29,12 +29,12 @@ class StoriesController < ApplicationController
     end
     
     def create
-        authorize Story
+        authorize @board
 
         service = Stories::Creator.new(@board)
         result = service.call(story_params)
 
-        presenter = Stories::StoryPresenter.new(current_user)
+        presenter = Stories::StoryPresenter.new
         presenter.call(result&.id)
 
         if service.successful? && presenter.successful?
@@ -45,14 +45,15 @@ class StoriesController < ApplicationController
     end
     
     def update
-        authorize Story
+        authorize @story
 
-        service = Stories::Updater.new(current_user)
+        service = Stories::Updater.new
+        puts story_params
         result = service.call(params[:id], story_params)
 
         
 
-        presenter = Stories::StoryPresenter.new(current_user)
+        presenter = Stories::StoryPresenter.new
         presenter.call(result&.id)
 
         if service.successful? && presenter.successful?
@@ -63,9 +64,9 @@ class StoriesController < ApplicationController
     end
 
     def destroy
-        authorize Story
+        authorize @story
 
-        service = Stories::Destroyer.new(current_user)
+        service = Stories::Destroyer.new
         result = service.call(params[:id])
 
         if service.successful?
@@ -76,10 +77,10 @@ class StoriesController < ApplicationController
     end
 
     def assign
-        authorize Story
+        authorize @story
 
-        service = Stories::Assigner.new(current_user, @story)
-        result = service.call(params[:user_id])
+        service = Stories::Assigner.new(@story)
+        result = service.call(story_params_assign)
         
     
         if service.successful?
@@ -89,13 +90,13 @@ class StoriesController < ApplicationController
         end
     end
 
-    def advance
-        authorize Story
+    def next_column
+        authorize @story
 
-        service = Stories::Updater.new(current_user)
-        result = service.advance(params[:id])
+        service = Stories::ColumnChanger.new
+        result = service.call(@story, true)
 
-        presenter = Stories::StoryPresenter.new(current_user)
+        presenter = Stories::StoryPresenter.new
         presenter.call(result&.id)
 
         if service.successful? && presenter.successful?
@@ -105,13 +106,13 @@ class StoriesController < ApplicationController
         end
     end
 
-    def revert
-        authorize Story
+    def previous_column
+        authorize @story
 
-        service = Stories::Updater.new(current_user)
-        result = service.revert(params[:id])
+        service = Stories::ColumnChanger.new
+        result = service.call(story, false)
 
-        presenter = Stories::StoryPresenter.new(current_user)
+        presenter = Stories::StoryPresenter.new
         presenter.call(result&.id)
 
         if service.successful? && presenter.successful?
@@ -124,11 +125,11 @@ class StoriesController < ApplicationController
     private
 
     def story_params
-        params.require(:story).permit(
-            :title,
-            :details,
-            :due_date
-        )
+        params.require(:story).permit(policy(Story).permitted_attributes)
+    end
+
+    def story_params_assign
+        params.require(:story).permit(policy(@story).permitted_attributes_for_assign)
     end
 
     def get_board

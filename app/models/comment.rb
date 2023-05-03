@@ -1,6 +1,7 @@
 class Comment < ApplicationRecord
   #add validations
-  validates :content, presence: true, length: { minimum: 2, maximum: 1000 }
+  # change data type content -> text !!!
+  validates :content, presence: true, length: { minimum: 10, maximum: 500 }
   validates :user_id, presence: true
 
   belongs_to :story

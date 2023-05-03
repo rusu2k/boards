@@ -1,23 +1,59 @@
 class StoryPolicy < ApplicationPolicy
-
-    def assign
-        action_name = "#{__method__}_#{self.class.name[0..-7]}"
-        has_access?(action_name) #&& has_subscription?
+    def permitted_attributes
+        [:title, :details, :due_date]
     end
 
-    def advance
-        action_name = "#{__method__}_#{self.class.name[0..-7]}"
-        has_access?(action_name) #&& has_subscription? && has_story?
+    def permitted_attributes_for_assign
+        [:user_id]
     end
 
-    def revert
-        action_name = "#{__method__}_#{self.class.name[0..-7]}"
-        has_access?(action_name) #&& has_subscription? && has_story?
+    def index?
+        return false unless has_subscription?
+
+        super
+    end
+
+    def show?
+        super && has_subscription?
+    end
+
+    def create?
+        super && has_subscription?
+    end
+
+    def update?
+        super && has_subscription?
+    end
+
+    def destroy?
+        super && has_subscription?
+    end
+
+    def next_column?
+        super && has_story? && has_subscription?
+    end
+
+    def previous_column?
+        super && has_story? && has_subscription?
     end
 
     private
 
+
+
+    # checks if the story is assigned to the user
     def has_story?
         @record.user_id == @user.id
+    end
+
+    def has_subscription?
+        if @record.is_a?(Board)
+            board_id = @record.id
+        else
+            board_id = @record.board_id
+        end
+
+        return true if BoardSubscription.exists?(user_id: @user.id, board_id: board_id)
+        false
     end
 end
