@@ -17,7 +17,7 @@ class BaseUpdater < BaseCommon
       success = @record.update(params)
       return @record if success
       
-      @errors << @record.errors if !success
+      check_record(@record)
       return
     end
 

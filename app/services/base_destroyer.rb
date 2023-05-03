@@ -17,7 +17,7 @@ class BaseDestroyer < BaseCommon
       @record.destroy
       return @record if successful?
 
-      @errors << @record.errors
+      check_record(@record)
     end
   
   end

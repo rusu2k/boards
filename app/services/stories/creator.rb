@@ -1,16 +1,15 @@
 class Stories::Creator < BaseCreator
+    include Stories::CommonHelper
 
     def initialize(board)
         @board = board
     end
 
     def call(params)
-        @errors = []
-        record = @board.stories.build(params)
-        save_record(record)
+        puts params
+        params[:board_id] = @board.id
+        puts params
+        super
     end
 
-    def model
-        Story
-    end
 end

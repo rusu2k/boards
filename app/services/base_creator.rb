@@ -1,31 +1,28 @@
-class BaseCreator
+class BaseCreator < BaseCommon
     attr_reader :errors
 
   
     def call(params)
       @errors = []
-      record = model.new(params)
-      save_record(record)
+
+      @errors << "Update attributes missing" if params.blank?
+      return if !successful?
+
+      save_record(params)
     end
 
-  
-    def save_record(record)
+    def save_record(params)
+      record = model.new(params)
       check_record(record)
-      return record if !successful?
+
+      return if !successful?
+      
       record.save
       check_record(record)
-      record
-    end
-  
-    def check_record(record)
-      @errors << record.errors if record.errors.present?
+
+      return record if successful?
+
+      return
     end
 
-    def model
-        raise NotImplementedError, 'model method must be implemented in child class'
-    end
-  
-    def successful?
-      @errors.blank?
-    end
   end
