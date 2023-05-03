@@ -1,24 +1,24 @@
-class Stories::StoriesCollector
-    attr_reader :errors
+class Stories::StoriesCollector < BaseCollector
+    include Stories::CommonHelper
 
     def initialize(board)
         @board = board
     end
   
     def call
-        @errors = []
+        super
         @stories = []
         
         check_board
-        @board.stories unless !successful?
+        return if !successful?
+
+        @stories = @collection.where(board_id: @board.id)
+        
+        @stories
     end
 
     def check_board
-        @errors << 'Board not accesible' if @board.blank?
-    end
-
-    def successful?
-        @errors.blank?
+        @errors << 'Board not found' if @board.blank?
     end
 
 end

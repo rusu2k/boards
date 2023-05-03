@@ -7,7 +7,6 @@ class Boards::BoardsCollector < BaseCollector
   
     def call
         super
-
         @boards = []
         
         subscriptions = find_subscriptions_by_user
