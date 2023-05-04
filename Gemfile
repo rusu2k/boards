@@ -9,6 +9,9 @@ gem "rails", "~> 7.0.4", ">= 7.0.4.3"
 # Use mysql as the database for Active Record
 gem "mysql2", "~> 0.5"
 
+gem "rspec"
+gem "rspec-rails"
+
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
 
