@@ -31,8 +31,8 @@ class StoriesController < ApplicationController
     def create
         authorize @board
 
-        service = Stories::Creator.new(@board)
-        result = service.call(story_params)
+        service = Stories::Creator.new
+        result = service.call(story_params, board: @board)
 
         presenter = Stories::StoryPresenter.new
         presenter.call(result)

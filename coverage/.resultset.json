@@ -577,30 +577,28 @@
           null
         ]
       },
-      "/mnt/d/files/boards/final/app/services/base_updater.rb": {
+      "/mnt/d/files/boards/final/app/services/base_destroyer.rb": {
         "lines": [
           1,
           1,
           null,
           1,
-          9,
-          9,
+          4,
+          4,
           null,
-          9,
-          9,
+          4,
+          4,
           null,
+          2,
           null,
-          9,
-          5,
+          2,
           null,
           null,
           1,
-          2,
-          2,
+          0,
+          0,
           null,
-          2,
-          null,
-          null,
+          0,
           null,
           null,
           null
@@ -611,11 +609,7 @@
           1,
           1,
           1,
-          9,
-          null,
-          null,
-          1,
-          2,
+          4,
           null,
           null,
           1,
@@ -627,12 +621,16 @@
           null,
           null,
           1,
-          9,
+          0,
+          null,
+          null,
+          1,
+          4,
           null,
           null
         ]
       }
     },
-    "timestamp": 1683191298
+    "timestamp": 1683193829
   }
 }

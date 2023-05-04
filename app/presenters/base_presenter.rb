@@ -1,4 +1,5 @@
 class BasePresenter
+    # baseCommon
     attr_reader :errors
 
     def call(record)

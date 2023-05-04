@@ -27,6 +27,8 @@ class Stories::ColumnChanger
         new_column = Column.find_by(position: current_position + 1)
         @stories_updater.call(@story, {column_id: new_column.id})
 
+        @errors += @stories_updater.errors if !@stories_updater.successful?
+        
         @story if successful?
     end
 
@@ -38,6 +40,8 @@ class Stories::ColumnChanger
         return if !successful?
         new_column = Column.find_by(position: current_position - 1)
         @stories_updater.call(@story, {column_id: new_column.id})
+
+        @errors += @stories_updater.errors if !@stories_updater.successful?
 
         @story if successful?
     end

@@ -5,11 +5,11 @@ class Stories::StoriesCollector < BaseCollector
         @board = board
     end
   
-    def call
-        super
+    def run
+        collect
         @stories = []
         
-        check_board
+        check_errors_for_board
         return if !successful?
 
         @stories = @collection.where(board_id: @board.id)
@@ -17,7 +17,7 @@ class Stories::StoriesCollector < BaseCollector
         @stories
     end
 
-    def check_board
+    def check_errors_for_board
         @errors << 'Board not found' if @board.blank?
     end
 

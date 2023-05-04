@@ -5,8 +5,8 @@ class BoardSubscriptionsController < ApplicationController
     def create
         authorize @board
 
-        service = BoardSubscriptions::Creator.new(@board)
-        result = service.call(board_subscriptions_params)
+        service = BoardSubscriptions::Creator.new
+        result = service.call(board_subscriptions_params, board: @board)
 
         # presenter
         

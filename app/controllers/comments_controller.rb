@@ -49,8 +49,8 @@ class CommentsController < ApplicationController
   def create
     authorize @story
 
-    service = Comments::Creator.new(current_user, @story)
-    result = service.call(comment_params)
+    service = Comments::Creator.new
+    result = service.call(comment_params, user: current_user, story: @story)
 
     presenter = Comments::CommentPresenter.new
     presenter.call(result)

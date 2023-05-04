@@ -1,13 +1,7 @@
 class Stories::Creator < BaseCreator
     include Stories::CommonHelper
 
-    def initialize(board)
-        @board = board
+    def fix_params(params, extras)
+        params[:board_id] = extras[:board].id
     end
-
-    def call(params)
-        params[:board_id] = @board.id
-        super
-    end
-
 end

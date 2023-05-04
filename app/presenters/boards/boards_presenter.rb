@@ -21,4 +21,4 @@ class Boards::BoardsPresenter
     def successful?
         @errors.blank?
     end
-  end
+end

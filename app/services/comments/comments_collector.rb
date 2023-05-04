@@ -1,24 +1,24 @@
-class Comments::CommentsCollector
-    attr_reader :errors
+class Comments::CommentsCollector < BaseCollector
+include Comments::CommonHelper
 
     def initialize(story)
         @story = story
     end
   
-    def call
-        @errors = []
+    def run
+        collect
         @comments = []
         
-        check_story
-        @story.comments unless !successful?
+        check_errors_for_story
+        return if !successful?
+
+        @comments = @collection.where(story_id: @story.id)
+
+        @comments
     end
 
-    def check_story
+    def check_errors_for_story
         @errors << 'Story not accesible' if @story.blank?
-    end
-
-    def successful?
-        @errors.blank?
     end
 
 end

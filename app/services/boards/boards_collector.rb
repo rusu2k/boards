@@ -5,10 +5,10 @@ class Boards::BoardsCollector < BaseCollector
         @current_user = current_user
     end
   
-    def call
-        super
+    def run
+        collect
+
         @boards = []
-        
         subscriptions = find_subscriptions_by_user
         load_boards(subscriptions)
     end
@@ -16,11 +16,10 @@ class Boards::BoardsCollector < BaseCollector
     def load_boards(subscriptions)
         @errors << "no boards" unless subscriptions.present?
         return if !successful?
-        
-        subscriptions.each do |subscription|
-            @boards << @collection.where(id: subscription.board_id).first
-        end
 
+        subscriptions.each do |subscription|
+            @boards += @collection.where(id: subscription.board_id)
+        end
         @boards
     end
 

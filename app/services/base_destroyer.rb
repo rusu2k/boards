@@ -1,8 +1,6 @@
 class BaseDestroyer < BaseCommon
-    attr_reader :errors
 
-    def call(record)
-      @errors = []
+    def run(record)
       @record = record
 
       @errors << "#{model.name} not found" if @record.blank?
@@ -14,7 +12,6 @@ class BaseDestroyer < BaseCommon
     end
   
     def destroy_model
-      puts @record.inspect
       @record.destroy
       return @record if successful?
 
