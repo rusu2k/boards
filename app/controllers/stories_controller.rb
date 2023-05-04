@@ -6,8 +6,8 @@ class StoriesController < ApplicationController
     def index
         authorize @board
         
-        service = Stories::StoriesCollector.new(@board) # storyCollector
-        stories = service.call
+        service = Stories::StoriesCollector.new(base_filter_service: Stories::Filter.new)
+        stories = service.call(board: @board, user_id: 8)
         presenter = Stories::StoriesPresenter.new 
         stories = presenter.call(stories)
         if service.successful? && presenter.successful?

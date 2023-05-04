@@ -4,7 +4,7 @@ class ColumnsController < ApplicationController
   
     def index
       authorize Column
-      service = Columns::ColumnsCollector.new
+      service = Columns::ColumnsCollector.new(base_filter_service: Columns::Filter.new)
       columns = service.call
   
       presenter = Columns::ColumnsPresenter.new

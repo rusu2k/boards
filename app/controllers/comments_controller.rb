@@ -6,8 +6,8 @@ class CommentsController < ApplicationController
   def index
     authorize @story
 
-    service = Comments::CommentsCollector.new(@story)
-    comments = service.call
+    service = Comments::CommentsCollector.new(base_filter_service: Comments::Filter.new)
+    comments = service.call(story: @story)
 
     presenter = Comments::CommentsPresenter.new
     comments = presenter.call(comments)

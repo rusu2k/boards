@@ -5,6 +5,8 @@ class Comments::CommentsPresenter
         @errors = []
         result = []
 
+        @errors << "No comments found" if comments.blank?
+
         return if !successful?
         comment_presenter = Comments::CommentPresenter.new
         

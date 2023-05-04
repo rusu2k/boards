@@ -5,6 +5,8 @@ class Stories::StoriesPresenter
         @errors = []
         result = []
 
+        @errors << "No stories found" if stories.blank?
+
         return if !successful?
         story_presenter = Stories::StoryPresenter.new
         

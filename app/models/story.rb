@@ -8,4 +8,16 @@ class Story < ApplicationRecord
   belongs_to :board
   belongs_to :user, optional: true
   has_many :comments, :dependent => :delete_all 
+
+  def api_attributes
+    {
+      id: id,
+      title: title,
+      details: details,
+      due_date: due_date,
+      status: column.name,
+      board: board_id,
+      user: user_id
+    }
+  end
 end

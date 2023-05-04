@@ -5,6 +5,9 @@ class Boards::BoardsPresenter
         board_presenter = Boards::BoardPresenter.new
         @errors = []
         result = []
+        @errors << "No stories found" if Boards.blank?
+
+        return [] if !successful?
 
         boards.each do |board|
             board_presenter.call(board)

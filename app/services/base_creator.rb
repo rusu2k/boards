@@ -1,6 +1,6 @@
 class BaseCreator < BaseCommon
 
-    def run(params, **extras)
+    def run(params, extras=nil)
       @errors << "Update attributes missing" if params.blank?
       return if !successful?
 

@@ -9,6 +9,7 @@ class Stories::StoryPresenter < BasePresenter
             due_date: @record.due_date,
             status: @record.column.title,
             user: @record.user_id,
+            board_id: @record.board_id,
             comments: Comments::CommentsPresenter.new.call(@record.comments)
         }
     end

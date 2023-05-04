@@ -1,10 +1,6 @@
-class BasePresenter
-    # baseCommon
-    attr_reader :errors
+class BasePresenter < BaseCommon
 
-    def call(record)
-        puts record
-        @errors = []
+    def run(record)
         @record = record
         check_record
 
@@ -21,10 +17,6 @@ class BasePresenter
 
     def model
         raise "Must be implemented in inheriting class"
-    end
-
-    def successful?
-        @errors.blank?
     end
 
 end

@@ -5,6 +5,9 @@ class Columns::ColumnsPresenter
         column_presenter = Columns::ColumnPresenter.new
         @errors = []
         result = []
+        @errors << "No stories found" if stories.blank?
+
+        return [] if !successful?
 
         columns.each do |column|
             column_presenter.call(column)
