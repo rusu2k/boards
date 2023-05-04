@@ -1,6 +1,9 @@
 class BaseCommon
     attr_reader :errors
-  
+    def initialize
+      @errors = []
+    end
+
     def check_record(record)
       @errors << record.errors if record.errors.present?
     end
