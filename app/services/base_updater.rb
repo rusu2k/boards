@@ -18,7 +18,7 @@ class BaseUpdater < BaseCommon
       return @record if success
       
       check_record(@record)
-      return
+      return nil
     end
 
   

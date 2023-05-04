@@ -1,7 +1,4 @@
 require 'rails_helper'
-require 'active_support'
-require 'active_support/core_ext'
-#require '../app/services/base_common.rb'
 
 RSpec.describe BaseCommon do
     describe "#check_record" do
