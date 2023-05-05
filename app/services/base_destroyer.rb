@@ -1,19 +1,16 @@
 class BaseDestroyer < BaseCommon
 
     def run(record)
+      return if record.blank?
+      
       @record = record
-
-      @errors << "#{model.name} not found" if @record.blank?
-      return if !successful?
       
       destroy_model
-  
-      @model
     end
   
     def destroy_model
-      @record.destroy
-      return @record if successful?
+      success = @record.destroy
+      return @record if success
 
       check_errors_for(@record)
     end

@@ -7,7 +7,7 @@ class CommentsController < ApplicationController
     authorize @story
 
     service = Comments::CommentsCollector.new(base_filter_service: Comments::Filter.new)
-    comments = service.call(story: @story)
+    comments = service.call( options: { story: @story } )
 
     presenter = Comments::CommentsPresenter.new
     comments = presenter.call(comments)
@@ -50,7 +50,7 @@ class CommentsController < ApplicationController
     authorize @story
 
     service = Comments::Creator.new
-    result = service.call(comment_params, user: current_user, story: @story)
+    result = service.call(comment_params.merge(user_id: current_user.id, story_id: @story.id))
 
     presenter = Comments::CommentPresenter.new
     presenter.call(result)

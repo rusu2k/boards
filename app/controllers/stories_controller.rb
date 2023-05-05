@@ -7,7 +7,7 @@ class StoriesController < ApplicationController
         authorize @board
         
         service = Stories::StoriesCollector.new(base_filter_service: Stories::Filter.new)
-        stories = service.call(board: @board, user_id: 8)
+        stories = service.call( options: { board: @board })
         presenter = Stories::StoriesPresenter.new 
         stories = presenter.call(stories)
         if service.successful? && presenter.successful?
@@ -32,7 +32,7 @@ class StoriesController < ApplicationController
         authorize @board
 
         service = Stories::Creator.new
-        result = service.call(story_params, board: @board)
+        result = service.call(story_params.merge(board_id: @board.id))
 
         presenter = Stories::StoryPresenter.new
         presenter.call(result)

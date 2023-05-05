@@ -6,7 +6,7 @@ class BoardSubscriptionsController < ApplicationController
         authorize @board
 
         service = BoardSubscriptions::Creator.new
-        result = service.call(board_subscriptions_params, board: @board)
+        result = service.call(board_subscriptions_params.merge(board_id: @board.id))
 
         # presenter
         

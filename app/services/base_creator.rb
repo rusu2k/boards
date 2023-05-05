@@ -1,26 +1,24 @@
 class BaseCreator < BaseCommon
 
-    def run(params, extras=nil)
+    def run(params)
       @errors << "Update attributes missing" if params.blank?
       return if !successful?
-
-      fix_params(params, extras) if extras.present?
 
       save_record(params)
     end
 
-    def save_record(params)
-      record = model.new(params)
-      check_errors_for(record)
 
-      return if !successful?
+
+    def save_record(params)
+      record = model.new
+      record.assign_attributes(params)
       
       record.save
       check_errors_for(record)
 
-      return record if successful?
-
-      return
+      return if !successful?
+      
+      record
     end
 
   end

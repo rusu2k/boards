@@ -7,9 +7,10 @@ RSpec.describe BaseDestroyer do
 
     before do
         allow(subject).to receive(:model).and_return(model_class)
+        subject.instance_variable_set(:@errors, [])
     end
 
-    describe "#call" do
+    describe "#run" do
         context "when the record is blank" do
             before { allow(record).to receive(:blank?).and_return(true) }
 
@@ -39,6 +40,25 @@ RSpec.describe BaseDestroyer do
                     allow(subject).to receive(:destroy_model).and_return(destroyed_record)
 
                     expect(subject.call(record)).to eq(destroyed_record)
+                end
+            end
+
+            context "when destroy fails" do
+                before { allow(record).to receive(:destroy).and_return(false) }
+
+                it "calls destroy_model" do
+                    expect(subject).to receive(:destroy_model)
+                    subject.run(record)
+                end
+
+                it "adds errors to @errors" do
+                    allow(record).to receive(:errors).and_return("error")
+                    expect { subject.run(record) }.to change { subject.errors }.from([]).to(["error"])
+                end
+
+                it "returns nil" do
+                    allow(record).to receive(:errors).and_return("error")
+                    expect(subject.run(record)).to be_nil
                 end
             end
 

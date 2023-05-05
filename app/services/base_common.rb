@@ -3,7 +3,9 @@ class BaseCommon
 
     def call(*args, **kwargs)
       before_run
-      run(*args, **kwargs)
+      result = run(*args, **kwargs)
+      after_run
+      result
     end
     
     def before_run
@@ -14,7 +16,7 @@ class BaseCommon
       raise NotImplementedError, "Must be implemented in inheriting class"
     end
 
-    def model
+    def model # layer superior -> helper -> baseupdater,destroyer,creator
         raise NotImplementedError, 'model method must be implemented in child class'
     end
 

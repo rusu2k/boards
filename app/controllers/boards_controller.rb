@@ -5,7 +5,7 @@ class BoardsController < ApplicationController
   def index
     authorize Board
     service = Boards::BoardsCollector.new(base_filter_service: Boards::Filter.new)
-    boards = service.call(user: current_user)
+    boards = service.call(options: { user: current_user })
     presenter = Boards::BoardsPresenter.new
     boards = presenter.call(boards)
     if service.successful? && presenter.successful?
@@ -31,7 +31,7 @@ class BoardsController < ApplicationController
 
     board = service.call(board_params)
     if board.present?
-      BoardSubscriptions::Creator.new.call({"user_id": current_user.id}, board: board)
+      BoardSubscriptions::Creator.new.call({"user_id": current_user.id, board_id: board.id})
     end
     presenter = Boards::BoardPresenter.new
     presenter.call(board)

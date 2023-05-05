@@ -5,13 +5,15 @@ class Boards::Filter < BaseFilter
     end
 
     def find_boards_by_user(user)
-        boards = []
-        subscriptions = BoardSubscription.where(user_id: user.id)
-        
-        subscriptions.each do |subscription|
-            boards << Board.find_by(id: subscription.board_id)
-        end
+        return Board.none if user.blank? || user.id.blank?
 
-        boards
+        board_ids = subscriptions_for_user(user.id).map(&:board_id)
+        return Board.none if board_ids.blank?
+
+        Board.find(board_ids)
+    end
+
+    def subscriptions_for_user(user_id)
+        BoardSubscription.where(user_id: user_id)
     end
 end

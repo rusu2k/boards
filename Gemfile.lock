@@ -71,6 +71,7 @@ GEM
       msgpack (~> 1.2)
     builder (3.2.4)
     concurrent-ruby (1.2.2)
+    connection_pool (2.4.0)
     crass (1.0.6)
     date (3.3.3)
     debug (1.7.2)
@@ -154,6 +155,10 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.0.6)
+    redis (5.0.6)
+      redis-client (>= 0.9.0)
+    redis-client (0.14.1)
+      connection_pool
     reline (0.3.3)
       io-console (~> 0.5)
     responders (3.1.0)
@@ -180,6 +185,11 @@ GEM
       rspec-mocks (~> 3.11)
       rspec-support (~> 3.11)
     rspec-support (3.12.0)
+    sidekiq (7.1.0)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.14.0)
     simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
@@ -209,8 +219,10 @@ DEPENDENCIES
   puma (~> 5.0)
   pundit (~> 2.3)
   rails (~> 7.0.4, >= 7.0.4.3)
+  redis
   rspec
   rspec-rails
+  sidekiq (~> 7.1)
   simplecov
   timeliness
 

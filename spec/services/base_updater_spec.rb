@@ -11,7 +11,7 @@ RSpec.describe BaseUpdater do
       subject.instance_variable_set(:@errors, [])
     end
     
-    describe "#call" do
+    describe "#run" do
       context "when the record is blank" do
         before do
            allow(record).to receive(:blank?).and_return(true)
@@ -66,17 +66,17 @@ RSpec.describe BaseUpdater do
           
           it "calls update_model" do
             expect(subject).to receive(:update_model).with(params)
-            subject.call(record, params)
+            subject.run(record, params)
           end
           
           it "adds errors to @errors" do
             allow(record).to receive(:errors).and_return("error")
-            expect { subject.call(record, params) }.to change { subject.errors }.from([]).to(["error"])
+            expect { subject.run(record, params) }.to change { subject.errors }.from([]).to(["error"])
           end
           
           it "returns nil" do
             allow(record).to receive(:errors).and_return("error")
-            expect(subject.call(record, params)).to be_nil
+            expect(subject.run(record, params)).to be_nil
           end
         end
       end

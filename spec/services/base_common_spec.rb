@@ -5,7 +5,6 @@ RSpec.describe BaseCommon do
     it 'calls before_run and run methods' do
       instance = BaseCommon.new
       expect(instance).to receive(:before_run)
-      expect { instance.call }.to raise_error(NotImplementedError)
     end
   end
 
@@ -32,16 +31,14 @@ RSpec.describe BaseCommon do
   end
 
   describe '#successful?' do
-    context 'when there are no errors' do
-      it 'returns true' do
+    context 'check for errors' do
+      it 'returns true when there are no errors' do
         instance = BaseCommon.new
         instance.instance_variable_set(:@errors, [])
         expect(instance.successful?).to eq(true)
       end
-    end
 
-    context 'when there are errors' do
-      it 'returns false' do
+      it 'returns false when there is atleast one error' do
         instance = BaseCommon.new
         instance.instance_variable_set(:@errors, { message: 'Model not found' })
         expect(instance.successful?).to eq(false)

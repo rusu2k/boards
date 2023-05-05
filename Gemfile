@@ -17,6 +17,7 @@ gem "rspec-rails"
 gem "puma", "~> 5.0"
 
 gem "devise"
+gem "redis"
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
@@ -55,3 +56,5 @@ end
 
 
 gem "pundit", "~> 2.3"
+
+gem "sidekiq", "~> 7.1"

@@ -5,7 +5,7 @@ class Columns::ColumnsPresenter
         column_presenter = Columns::ColumnPresenter.new
         @errors = []
         result = []
-        @errors << "No stories found" if stories.blank?
+        @errors << "No columns found" if columns.blank?
 
         return [] if !successful?
 

@@ -1,9 +1,9 @@
 class BaseUpdater < BaseCommon
 
     def run(record, params)
+      return unless record.present?
       @record = record
 
-      @errors << "#{model.name} not found" if @record.blank?
       @errors << "Update attributes missing" if params.blank?
       
       return if !successful?
@@ -15,7 +15,6 @@ class BaseUpdater < BaseCommon
       return @record if success
       
       check_errors_for(@record)
-      return
     end
 
 end
