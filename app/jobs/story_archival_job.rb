@@ -3,7 +3,7 @@ class StoryArchivalJob
 
     def perform(*args)
         stories = Story.where.not(delivered_at: nil)
-        stories = stories.where("delivered_at < ?", Time.now - 300)
+        stories = stories.where("delivered_at < ?", Time.now - (5 * 60))
 
         stories.each do |story|
             story.update(side_status: "Archived")
