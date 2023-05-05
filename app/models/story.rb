@@ -9,6 +9,8 @@ class Story < ApplicationRecord
   belongs_to :user, optional: true
   has_many :comments, :dependent => :delete_all 
 
+  DEPLOYED_COLUMN = 4
+
   def api_attributes
     {
       id: id,

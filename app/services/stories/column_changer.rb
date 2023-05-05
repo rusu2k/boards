@@ -29,6 +29,7 @@ class Stories::ColumnChanger
 
         @errors += @stories_updater.errors if !@stories_updater.successful?
         
+        @stories_updater.call(@story, {delivered_at: Time.now}) if @story.column_id == Story::DEPLOYED_COLUMN
         @story if successful?
     end
 
