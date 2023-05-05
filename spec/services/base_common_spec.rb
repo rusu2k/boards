@@ -1,60 +1,51 @@
 require 'rails_helper'
 
 RSpec.describe BaseCommon do
-    describe "#check_record" do
-      let(:record) { double(errors: []) }
-      let(:subject) { described_class.new }
-      puts "here"
+  describe '#call' do
+    it 'calls before_run and run methods' do
+      instance = BaseCommon.new
+      expect(instance).to receive(:before_run)
+      expect { instance.call }.to raise_error(NotImplementedError)
+    end
+  end
 
-      context "when the record has no errors" do
-        it "does not add errors to @errors" do
-          expect { subject.check_record(record) }.not_to change { subject.errors }
-        end
-      end
-      
-      context "when the record has errors" do
-        before { allow(record).to receive(:errors).and_return("error") }
-        
-        it "adds errors to @errors" do
-          expect { subject.check_record(record) }.to change { subject.errors }.from([]).to(["error"])
-        end
+  describe '#before_run' do
+    it 'initializes errors' do
+      instance = BaseCommon.new
+      instance.before_run
+      expect(instance.instance_variable_get(:@errors)).to eq([])
+    end
+  end
+
+  describe '#run' do
+    it 'raises NotImplementedError' do
+      instance = BaseCommon.new
+      expect { instance.run }.to raise_error(NotImplementedError)
+    end
+  end
+
+  describe '#model' do
+    it 'raises NotImplementedError' do
+      instance = BaseCommon.new
+      expect { instance.model }.to raise_error(NotImplementedError)
+    end
+  end
+
+  describe '#successful?' do
+    context 'when there are no errors' do
+      it 'returns true' do
+        instance = BaseCommon.new
+        instance.instance_variable_set(:@errors, [])
+        expect(instance.successful?).to eq(true)
       end
     end
-    
-    describe "#call" do
-      it "raises an error" do
-        expect { described_class.new.call }.to raise_error("Must be implemented in inheriting class")
+
+    context 'when there are errors' do
+      it 'returns false' do
+        instance = BaseCommon.new
+        instance.instance_variable_set(:@errors, { message: 'Model not found' })
+        expect(instance.successful?).to eq(false)
       end
     end
-    
-    describe "#model" do
-      it "raises a NotImplementedError" do
-        expect { described_class.new.model }.to raise_error(NotImplementedError, "model method must be implemented in child class")
-      end
-    end
-    
-    describe "#successful?" do
-      let(:record) { double(errors: []) }
-      subject { described_class.new }
-      
-      context "when there are no errors" do
-        before { allow(subject).to receive(:errors).and_return([]) }
-        
-        it "returns true" do
-          expect(subject.successful?).to be true
-        end
-      end
-      
-      context "when there are errors" do
-        before do
-          allow(subject).to receive(:errors).and_return(["error"])
-          allow(record).to receive(:errors).and_return("error") 
-        end
-        
-        it "returns false" do
-          subject.check_record(record)
-          expect(subject.successful?).to be false
-        end
-      end
-    end
+  end
 end

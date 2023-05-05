@@ -8,14 +8,17 @@ RSpec.describe BaseUpdater do
     
     before do
       allow(subject).to receive(:model).and_return(model_class)
+      subject.instance_variable_set(:@errors, [])
     end
     
     describe "#call" do
       context "when the record is blank" do
-        before { allow(record).to receive(:blank?).and_return(true) }
+        before do
+           allow(record).to receive(:blank?).and_return(true)
+        end
         
         it "adds an error to @errors" do
-          expect { subject.call(record, params) }.to change { subject.errors }.from([]).to(["TestModel not found"])
+          expect { subject.run(record, params) }.to change { subject.errors }.from([]).to(["TestModel not found"])
         end
         
         it "does not call update_model" do

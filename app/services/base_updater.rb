@@ -3,7 +3,7 @@ class BaseUpdater < BaseCommon
     def run(record, params)
       @record = record
 
-      @errors << "#{model.name} nott found" if @record.blank?
+      @errors << "#{model.name} not found" if @record.blank?
       @errors << "Update attributes missing" if params.blank?
       
       return if !successful?
