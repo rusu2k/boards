@@ -1,13 +1,13 @@
 class CommentsController < ApplicationController
   before_action :authenticate_user!
   before_action :get_story
-  before_action :get_comment, only: [:show, :update, :destroy]
+  before_action :get_comment, only: %i[show update destroy]
 
   def index
     authorize @story
 
     service = Comments::CommentsCollector.new(base_filter_service: Comments::Filter.new)
-    comments = service.call( options: { story: @story } )
+    comments = service.call(options: { story: @story })
 
     presenter = Comments::CommentsPresenter.new
     comments = presenter.call(comments)
@@ -16,7 +16,7 @@ class CommentsController < ApplicationController
       render json: comments, status: :ok
     else
       render json: { errors: service.errors + presenter.errors }, status: :bad_request
-    end   
+    end
   end
 
   def update
@@ -29,21 +29,21 @@ class CommentsController < ApplicationController
     presenter.call(result)
 
     if service.successful? && presenter.successful?
-        render json: presenter.render, status: :accepted
+      render json: presenter.render, status: :accepted
     else
-        render json: { errors: service.errors + presenter.errors }, status: :unprocessable_entity
+      render json: { errors: service.errors + presenter.errors }, status: :unprocessable_entity
     end
   end
 
   def show
     authorize @comment
 
-    presenter = Comments::CommentPresenter.new.call(@comment) 
-        if presenter.successful? 
-            render json: presenter.render, status: :ok
-        else
-            render json: { errors: presenter.errors }, status: :not_found
-        end
+    presenter = Comments::CommentPresenter.new.call(@comment)
+    if presenter.successful?
+      render json: presenter.render, status: :ok
+    else
+      render json: { errors: presenter.errors }, status: :not_found
+    end
   end
 
   def create
@@ -56,26 +56,27 @@ class CommentsController < ApplicationController
     presenter.call(result)
 
     if service.successful? && presenter.successful?
-        render json: presenter.render, status: :created
+      render json: presenter.render, status: :created
     else
-        render json: { errors: service.errors + presenter.errors }, status: :unprocessable_entity
+      render json: { errors: service.errors + presenter.errors }, status: :unprocessable_entity
     end
   end
 
   def destroy
     authorize @comment
-    
-    service = Comments::Destroyer.new
-        result = service.call(@comment)
 
-        if service.successful?
-            render json: { message: 'Comment Deleted.' }, status: :ok
-        else
-            render json: { errors: service.errors }, status: :unprocessable_entity
-        end
+    service = Comments::Destroyer.new
+    service.call(@comment)
+
+    if service.successful?
+      render json: { message: 'Comment Deleted.' }, status: :ok
+    else
+      render json: { errors: service.errors }, status: :unprocessable_entity
+    end
   end
 
   private
+
   def comment_params
     params.require(:comment).permit(policy(Comment).permitted_attributes)
   end

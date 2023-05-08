@@ -1,3 +1,3 @@
 class Stories::Updater < BaseUpdater
-    include Stories::CommonHelper
+  include Stories::CommonHelper
 end

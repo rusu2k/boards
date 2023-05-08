@@ -35,6 +35,30 @@ paths:
                               type: string
         '401':
           description: unauthorized
+    post:
+      summary: Creates a board
+      tags:
+      - Boards
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: board created
+        '422':
+          description: invalid request
+        '401':
+          description: unauthorized
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+              required:
+              - title
 servers:
 - url: http://{defaultHost}
   variables:

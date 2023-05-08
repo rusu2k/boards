@@ -1,0 +1,427 @@
+# frozen_string_literal: true
+​
+module Bundles
+  class BundlesController < Bundles::ApplicationController
+    cattr_accessor :my_resource_class
+    cattr_accessor :my_resource_name
+​
+    before_action :setup_format_options
+    before_action :deserialize, only: %i[update create]
+    before_action :find_bundle, only: %i[show update destroy]
+​
+    swagger_path '/bundles' do
+      operation :get do
+        key :summary, 'Returns all class bundles'
+        key :description, ''
+        key :produces, [
+          'application/json',
+        ]
+        Bundles::Bundle::FORMAT_OPTIONS.each do |format_option|
+          parameter do
+            key :name, format_option
+            key :in, :query
+            key :description, "returns #{format_option}"
+            key :type, :boolean
+          end
+        end
+        response 200 do
+          key :description, 'Bundles response'
+          schema do
+            key :type, :object
+            property :bundles do
+              key :type, :array
+              items do
+                key :$ref, :BundlesBundleResponse
+              end
+            end
+          end
+        end
+      end
+    end
+​
+    def index
+      @bundles = preload_bundles
+      render json: { bundles: Bundles::BundlesPresenter.new(current_user.company, @bundles,
+        @format_options).as_json }
+    end
+​
+    swagger_path '/bundles/:id' do
+      operation :get do
+        key :summary, 'Get a bundle'
+        key :description, ''
+        key :produces, [
+          'application/json',
+        ]
+        Bundles::Bundle::FORMAT_OPTIONS.each do |format_option|
+          parameter do
+            key :name, format_option
+            key :in, :query
+            key :description, "returns #{format_option}"
+            key :type, :boolean
+          end
+        end
+        response 200 do
+          key :description, 'Bundle response'
+          schema do
+            key :type, :object
+            property :bundle do
+              key :$ref, :BundlesBundleResponse
+            end
+          end
+        end
+        response 422 do
+          key :description, 'Invalid parameters'
+          schema do
+            key :type, :object
+            property :bundle do
+              key :$ref, :BundlesBundleResponse
+            end
+          end
+        end
+      end
+    end
+​
+    def show
+      render json: { bundle: Bundles::BundlePresenter.new(current_user.company, @bundle, @format_options).as_json },
+        status: status
+    end
+​
+    swagger_path '/bundles' do
+      operation :post do
+        key :summary, 'Creates a bundle'
+        key :description, ''
+        key :produces, [
+          'application/json',
+        ]
+        parameter do
+          key :name, :bundle
+          key :in, :body
+          key :description, 'Bundle'
+          key :required, true
+          schema do
+            key :$ref, :BundlesBundleRequest
+          end
+        end
+        Bundles::Bundle::FORMAT_OPTIONS.each do |format_option|
+          parameter do
+            key :name, format_option
+            key :in, :query
+            key :description, "returns #{format_option}"
+            key :type, :boolean
+          end
+        end
+        response 200 do
+          key :description, 'Bundle response'
+          schema do
+            key :type, :object
+            property :bundle do
+              key :$ref, :BundlesBundleResponse
+            end
+          end
+        end
+        response 422 do
+          key :description, 'Invalid parameters'
+          schema do
+            key :type, :object
+            property :bundle do
+              key :$ref, :BundlesBundleResponse
+            end
+          end
+        end
+      end
+    end
+​
+    def create # rubocop:disable Metrics/AbcSize
+      raise Pundit::NotAuthorizedError unless Bundles::BundlePolicy.new(current_user, bundle_params).can_create_bundles?
+​
+      location_ids_to_ignore = parse_location_ids_to_ignore
+​
+      bundle_params.bundle_item_groups_attributes = bundle_params&.bundle_item_groups_attributes&.map do |biga|
+        biga.except(:location_ids_to_ignore)
+      end
+      creator = Bundles::BundleCreator.new(
+        company: current_user.company,
+        attrs: Hashie::Mash.new(bundle_params),
+        user: current_user,
+      ).run
+      successful = creator.successful?
+      location_ids_to_ignore += (bundle_params['bundle_item_groups_attributes']&.map do |biga|
+        biga['bundle_item_group_prices_attributes']&.map { |bigpa| bigpa['location_id'] } || []
+      end || [])
+      location_ids_to_ignore = location_ids_to_ignore.flatten.compact.uniq
+      creator.bundle.bundle_item_group_price_templates.each do |bundle_item_group_price_template|
+        successful &&= Bundles::BundlePriceSetter.new(bundle_item_group_price_template, location_ids_to_ignore).run.successful?
+      end
+      status = successful ? :ok : :unprocessable_entity
+      render json: {
+        bundle: Bundles::BundlePresenter.new(current_user.company, creator.bundle, @format_options).as_json,
+      }, status: status
+    end
+​
+    swagger_path '/bundles/:id' do
+      operation :put do
+        key :summary, 'Updates a bundle'
+        key :description, ''
+        key :produces, [
+          'application/json',
+        ]
+        parameter do
+          key :name, :bundle
+          key :in, :body
+          key :description, 'Bundle'
+          key :required, true
+          schema do
+            key :$ref, :BundlesBundleRequest
+          end
+        end
+        Bundles::Bundle::FORMAT_OPTIONS.each do |format_option|
+          parameter do
+            key :name, format_option
+            key :in, :query
+            key :description, "returns #{format_option}"
+            key :type, :boolean
+          end
+        end
+        response 200 do
+          key :description, 'Bundle response'
+          schema do
+            key :type, :object
+            property :bundle do
+              key :$ref, :BundlesBundleResponse
+            end
+          end
+        end
+        response 422 do
+          key :description, 'Invalid parameters'
+          schema do
+            key :type, :object
+            property :bundle do
+              key :$ref, :BundlesBundleResponse
+            end
+          end
+        end
+      end
+    end
+​
+    def update
+      location_ids_to_ignore = parse_location_ids_to_ignore
+​
+      successful = nil
+      bundle_params.bundle_item_groups_attributes = bundle_params&.bundle_item_groups_attributes&.map do |biga|
+        biga.except(:location_ids_to_ignore)
+      end
+      ActiveRecord::Base.transaction do
+        successful = update_bundle_and_prices(location_ids_to_ignore)
+        raise ActiveRecord::Rollback unless successful
+      end
+​
+      status = successful ? :ok : :unprocessable_entity
+      render json: {
+        bundle: Bundles::BundlePresenter.new(current_user.company, @bundle.reload, @format_options).as_json,
+      }, status: status
+    end
+​
+    swagger_path '/bundles/:id' do
+      operation :delete do
+        key :summary, 'Delete a bundle'
+        key :description, ''
+        key :produces, [
+          'application/json',
+        ]
+        Bundles::Bundle::FORMAT_OPTIONS.each do |format_option|
+          parameter do
+            key :name, format_option
+            key :in, :query
+            key :description, "returns #{format_option}"
+            key :type, :boolean
+          end
+        end
+        response 200 do
+          key :description, 'Success response'
+          schema do
+            key :type, :object
+          end
+        end
+        response 422 do
+          key :description, 'Invalid parameters'
+          schema do
+            key :type, :object
+          end
+        end
+      end
+    end
+​
+    def destroy
+      destroyer = Bundles::BundleDestroyer.new(
+        company: current_user.company,
+        bundle: @bundle,
+        user: current_user,
+      ).run
+      status = destroyer.successful? ? :ok : :unprocessable_entity
+      render json: { bundle: Bundles::BundlePresenter.new(current_user.company, @bundle, @format_options).as_json },
+        status: status
+    end
+​
+    swagger_path '/bundles/batch_update' do
+      operation :post do
+        key :summary, 'Update bundles attributes (e.g. sort_order)'
+        key :description, ''
+        key :produces, [
+          'application/json',
+        ]
+        parameter do
+          key :name, :bundles
+          key :in, :body
+          key :description, 'Bundles'
+          key :required, true
+          schema do
+            key :type, :object
+            property :bundles do
+              key :type, :array
+              items do
+                key :$ref, :BundlesBundleRequest
+              end
+            end
+          end
+        end
+        Bundles::Bundle::FORMAT_OPTIONS.each do |format_option|
+          parameter do
+            key :name, format_option
+            key :in, :query
+            key :description, "returns #{format_option}"
+            key :type, :boolean
+          end
+        end
+        response 200 do
+          key :description, 'Bundle response'
+          schema do
+            key :type, :object
+            property :bundle do
+              key :$ref, :BundlesBundleResponse
+            end
+          end
+        end
+        response 422 do
+          key :description, 'Invalid parameters'
+          schema do
+            key :type, :object
+            property :bundle do
+              key :$ref, :BundlesBundleResponse
+            end
+          end
+        end
+      end
+    end
+​
+    def batch_update # rubocop:disable Metrics/AbcSize
+      raise Pundit::NotAuthorizedError unless Bundles::BundlePolicy.new(current_user).can_create_bundles?
+​
+      batch_updater = Bundles::BundlesBatchUpdater.new.call(
+        bundles_hash: Bundles::Bundle.where(company_id: current_user.company.id).index_by(&:id),
+        attrs: bundles_params,
+      )
+      successful = batch_updater.successful?
+      status = successful ? :ok : :unprocessable_entity
+      render json: {
+        bundle: Bundles::BundlesPresenter.new(current_user.company, batch_updater.bundles, @format_options).as_json,
+      }, status: status
+    end
+​
+    private
+​
+    def find_bundle
+      @bundle = preload_bundles.find_by(id: params.require(:id)) || api_not_found!(:id)
+      authorize @bundle
+    end
+​
+    def bundle_params
+      params.require(:bundle).permit!
+    end
+​
+    def bundles_params
+      params.require(:bundles).map(&:permit!)
+    end
+​
+    def preload_bundles # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      bundles = Bundles::Bundle.where(company_id: GDS.company_ids_for_resource_definition(current_user.company,
+        :bundles))
+      bundles = if current_user.company.parent?
+        bundles.order(:sort_order)
+      else
+        bundles.select('bundles_bundles.*').
+          select("IF(bundles_bundles.company_id = #{current_user.company.id}, 1, 0) AS company_order").
+          order(:company_order, :sort_order) # sort by global package first and local package after
+      end
+      bundles = Bundles::BundlePolicy::Scope.new(current_user, bundles).resolve
+      preloads = {}
+​
+      options = @format_options
+      options = Hash.new(true) if options[:bundle_all]
+​
+      preloads[:bundle_item_groups] = {} if options[:bundle_item_groups]
+​
+      if options[:bundle_item_group_prices]
+        preloads[:bundle_item_groups] ||= {}
+        preloads[:bundle_item_groups][:bundle_item_group_prices] = [:location]
+      end
+​
+      if options[:bundle_item_group_commission_prices]
+        preloads[:bundle_item_groups] ||= {}
+        preloads[:bundle_item_groups][:bundle_item_group_commission_prices] = %i[
+          bundle_item_group_commission_price_employees
+          bundle_item_group_commission_price_locations
+          bundle_item_group_commission_price_items
+        ]
+      end
+​
+      if options[:bundle_item_group_price_templates]
+        preloads[:bundle_item_groups] ||= {}
+        preloads[:bundle_item_groups][:bundle_item_group_price_templates] = {}
+      end
+​
+      preloads[:bundle_items] ||= {} if options[:bundle_items]
+​
+      bundles.includes(preloads)
+    end
+​
+    def update_bundle_and_prices(location_ids_to_ignore)
+      updater = Bundles::BundleUpdater.new(
+        company: current_user.company,
+        bundle: @bundle,
+        attrs: Hashie::Mash.new(bundle_params),
+        user: current_user,
+      ).run
+      successful = updater.successful?
+      successful &&= update_prices(location_ids_to_ignore)
+      successful
+    end
+​
+    # rubocop:disable Layout/LineLength
+    def update_prices(location_ids_to_ignore) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
+      successful = true
+      bundle_item_groups_attributes_arr = params[:bundle][:bundle_item_groups_attributes] || []
+      bundle_item_groups_attributes_arr.each do |bundle_item_groups_attributes|
+        bundle_item_group_price_templates_attributes_arr = bundle_item_groups_attributes[:bundle_item_group_price_templates_attributes] || []
+        bundle_item_group_price_templates_attributes_arr.each do |bundle_item_group_price_templates_attributes|
+          bundle_item_group_price_template = @bundle.bundle_item_group_price_templates.find_by(id: bundle_item_group_price_templates_attributes[:id])
+          bundle_item_group_price_template ||= @bundle.bundle_item_group_price_templates.reload.where(
+            price: bundle_item_group_price_templates_attributes[:price],
+            location_group_id: bundle_item_group_price_templates_attributes[:location_group_id],
+          ).last
+          next unless bundle_item_group_price_template
+​
+          ignore_ids = location_ids_to_ignore + (bundle_item_groups_attributes['bundle_item_group_prices_attributes']&.map { |bigpa| bigpa['location_id'] } || [])
+          successful &&= Bundles::BundlePriceSetter.new(bundle_item_group_price_template, ignore_ids).run.successful?
+        end
+      end
+      successful
+    end
+    # rubocop:enable Layout/LineLength
+​
+    def parse_location_ids_to_ignore
+      bundle_params&.bundle_item_groups_attributes&.map do |biga|
+        biga[:location_ids_to_ignore]
+      end&.flatten&.compact&.uniq || []
+    end
+  end
+end

@@ -1,3 +1,3 @@
 class Boards::Updater < BaseUpdater
-    include Boards::CommonHelper
+  include Boards::CommonHelper
 end

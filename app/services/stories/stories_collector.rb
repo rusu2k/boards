@@ -1,3 +1,3 @@
 class Stories::StoriesCollector < BaseCollector
-    include Stories::CommonHelper
+  include Stories::CommonHelper
 end

@@ -1,5 +1,5 @@
 module Comments::CommonHelper
-    def model
-        Comment
-    end
+  def model
+    Comment
+  end
 end

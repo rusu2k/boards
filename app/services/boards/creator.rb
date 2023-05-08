@@ -1,3 +1,3 @@
 class Boards::Creator < BaseCreator
-    include Boards::CommonHelper
+  include Boards::CommonHelper
 end

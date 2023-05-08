@@ -1,3 +1,3 @@
 class Comments::Updater < BaseUpdater
-    include Comments::CommonHelper
+  include Comments::CommonHelper
 end

@@ -1,3 +1,3 @@
 class Stories::Creator < BaseCreator
-    include Stories::CommonHelper
+  include Stories::CommonHelper
 end

@@ -1,4 +1,3 @@
-
 class Boards::Destroyer < BaseDestroyer
-    include Boards::CommonHelper
+  include Boards::CommonHelper
 end

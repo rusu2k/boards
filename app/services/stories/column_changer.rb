@@ -1,57 +1,59 @@
 class Stories::ColumnChanger
-    attr_reader :errors
+  attr_reader :errors
 
-    # Cache max and min position
-    def initialize(stories_updater: Stories::Updater)
-        @stories_updater = stories_updater.new
-    end
+  # Cache max and min position
+  def initialize(stories_updater: Stories::Updater)
+    @stories_updater = stories_updater.new
+  end
 
-    def call(story, advance)
-        @errors = []
-        @story = story
-        check_story(story)
-        
-        return if !successful?
+  def call(story, advance)
+    @errors = []
+    @story = story
+    check_story(story)
 
-        return next_column if advance
+    return unless successful?
 
-        previous_column
-    end
+    return next_column if advance
 
-    def next_column
-        @errors = []
-        current_position = @story.column.position
-        @errors << "The story is not advanceable" unless Column.exists?(position: current_position + 1)
+    previous_column
+  end
 
-        return if !successful?
-        new_column = Column.find_by(position: current_position + 1)
-        @stories_updater.call(@story, {column_id: new_column.id})
+  def next_column
+    @errors = []
+    current_position = @story.column.position
+    @errors << 'The story is not advanceable' unless Column.exists?(position: current_position + 1)
 
-        @errors += @stories_updater.errors if !@stories_updater.successful?
-        
-        @stories_updater.call(@story, {delivered_at: Time.now}) if @story.column_id == Story::DEPLOYED_COLUMN
-        @story if successful?
-    end
+    return unless successful?
 
-    def previous_column
-        @errors = []
-        current_position = @story.column.position
-        @errors << "The story is not revertable" unless Column.exists?(position: current_position - 1)
+    new_column = Column.find_by(position: current_position + 1)
+    @stories_updater.call(@story, { column_id: new_column.id })
 
-        return if !successful?
-        new_column = Column.find_by(position: current_position - 1)
-        @stories_updater.call(@story, {column_id: new_column.id})
+    @errors += @stories_updater.errors unless @stories_updater.successful?
 
-        @errors += @stories_updater.errors if !@stories_updater.successful?
+    @stories_updater.call(@story, { delivered_at: Time.now }) if @story.column_id == Story::DEPLOYED_COLUMN
+    @story if successful?
+  end
 
-        @story if successful?
-    end
+  def previous_column
+    @errors = []
+    current_position = @story.column.position
+    @errors << 'The story is not revertable' unless Column.exists?(position: current_position - 1)
 
-    def check_story(story)
-        @errors << "story could not be found in DB" unless story.present?
-    end
+    return unless successful?
 
-    def successful?
-        @errors.blank?
-    end
+    new_column = Column.find_by(position: current_position - 1)
+    @stories_updater.call(@story, { column_id: new_column.id })
+
+    @errors += @stories_updater.errors unless @stories_updater.successful?
+
+    @story if successful?
+  end
+
+  def check_story(story)
+    @errors << 'story could not be found in DB' unless story.present?
+  end
+
+  def successful?
+    @errors.blank?
+  end
 end

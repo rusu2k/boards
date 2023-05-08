@@ -23,7 +23,6 @@ class CommentPolicy < ApplicationPolicy
     super && has_subscription? && has_comment?
   end
 
-
   private
 
   def has_comment?
@@ -31,13 +30,14 @@ class CommentPolicy < ApplicationPolicy
   end
 
   def has_subscription?
-      if @record.is_a?(Comment)
-        board_id = Story.find_by(id: @record.story_id).board_id
-      elsif @record.is_a?(Story)
-        board_id = @record.board_id
-      end
+    if @record.is_a?(Comment)
+      board_id = Story.find_by(id: @record.story_id).board_id
+    elsif @record.is_a?(Story)
+      board_id = @record.board_id
+    end
 
-      return true if BoardSubscription.exists?(user_id: @user.id, board_id: board_id)
-      false
+    return true if BoardSubscription.exists?(user_id: @user.id, board_id:)
+
+    false
   end
 end

@@ -1,3 +1,3 @@
 class Columns::Creator < BaseCreator
-    include Columns::CommonHelper
+  include Columns::CommonHelper
 end

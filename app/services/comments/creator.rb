@@ -1,3 +1,3 @@
 class Comments::Creator < BaseCreator
-    include Comments::CommonHelper
+  include Comments::CommonHelper
 end

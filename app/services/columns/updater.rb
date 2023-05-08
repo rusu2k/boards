@@ -1,3 +1,3 @@
 class Columns::Updater < BaseUpdater
-    include Columns::CommonHelper
+  include Columns::CommonHelper
 end

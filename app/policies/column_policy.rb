@@ -1,5 +1,5 @@
 class ColumnPolicy < ApplicationPolicy
-    def permitted_attributes
-        [:title, :position]
-    end
+  def permitted_attributes
+    %i[title position]
+  end
 end

@@ -1,3 +1,3 @@
 class Comments::CommentsCollector < BaseCollector
-    include Comments::CommonHelper
+  include Comments::CommonHelper
 end

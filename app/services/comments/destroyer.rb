@@ -1,3 +1,3 @@
 class Comments::Destroyer < BaseDestroyer
-    include Comments::CommonHelper
+  include Comments::CommonHelper
 end

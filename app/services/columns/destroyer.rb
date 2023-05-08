@@ -1,3 +1,3 @@
 class Columns::Destroyer < BaseDestroyer
-    include Columns::CommonHelper
+  include Columns::CommonHelper
 end

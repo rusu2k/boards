@@ -1,5 +1,5 @@
 module Boards::CommonHelper
-    def model
-        Board
-    end
+  def model
+    Board
+  end
 end

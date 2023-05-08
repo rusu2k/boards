@@ -1,12 +1,11 @@
 class Columns::ColumnPresenter < BasePresenter
-    include Columns::CommonHelper
+  include Columns::CommonHelper
 
-    def render
-        {
-            id: @record.id,
-            title: @record.title,
-            position: @record.position
-        }
-    end
-
+  def render
+    {
+      id: @record.id,
+      title: @record.title,
+      position: @record.position
+    }
+  end
 end

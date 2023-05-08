@@ -1,6 +1,6 @@
 class BoardsController < ApplicationController
-    before_action :authenticate_user!
-    before_action :get_board, only: [:show, :update, :destroy]
+  before_action :authenticate_user!
+  before_action :get_board, only: %i[show update destroy]
 
   # # GET /boards
   # swagger_controller :boards, "Boards Management"
@@ -11,7 +11,7 @@ class BoardsController < ApplicationController
   #   response :ok
   #   response :bad_request
   # end
-    
+
   def index
     authorize Board
     service = Boards::BoardsCollector.new(base_filter_service: Boards::Filter.new)
@@ -19,7 +19,7 @@ class BoardsController < ApplicationController
     presenter = Boards::BoardsPresenter.new
     boards = presenter.call(boards)
     if service.successful? && presenter.successful?
-        render json: boards, status: :ok
+      render json: boards, status: :ok
     else
       render json: { errors: service.errors + presenter.errors }, status: :bad_request
     end
@@ -32,14 +32,14 @@ class BoardsController < ApplicationController
   #   response :ok
   #   response :not_found
   # end
-  
+
   def show
     authorize @board
-    presenter = Boards::BoardPresenter.new.call(@board) 
-    if presenter.successful? 
-        render json: presenter.render, status: :ok # verific
+    presenter = Boards::BoardPresenter.new.call(@board)
+    if presenter.successful?
+      render json: presenter.render, status: :ok # verific
     else
-        render json: { errors: presenter.errors }, status: :not_found
+      render json: { errors: presenter.errors }, status: :not_found
     end
   end
 
@@ -50,24 +50,21 @@ class BoardsController < ApplicationController
   #   response :created
   #   response :unprocessable_entity
   # end
-  
+
   def create
     authorize Board
     service = Boards::Creator.new
 
     board = service.call(board_params)
-    if board.present?
-      BoardSubscriptions::Creator.new.call({"user_id": current_user.id, board_id: board.id})
-    end
+    BoardSubscriptions::Creator.new.call({ "user_id": current_user.id, board_id: board.id }) if board.present?
     presenter = Boards::BoardPresenter.new
     presenter.call(board)
 
     if service.successful? && presenter.successful?
-        render json: presenter.render, status: :created
+      render json: presenter.render, status: :created
     else
       render json: { errors: service.errors + presenter.errors }, status: :unprocessable_entity
     end
-
   end
 
   # # PATCH/PUT /boards/:id
@@ -78,7 +75,7 @@ class BoardsController < ApplicationController
   #   response :accepted
   #   response :unprocessable_entity
   # end
-  
+
   def update
     authorize @board
 
@@ -89,11 +86,10 @@ class BoardsController < ApplicationController
     presenter.call(board)
 
     if service.successful? && presenter.successful?
-        render json: presenter.render, status: :accepted
+      render json: presenter.render, status: :accepted
     else
       render json: { errors: service.errors + presenter.errors }, status: :unprocessable_entity
     end
-
   end
 
   # # DELETE /boards/:id
@@ -110,13 +106,14 @@ class BoardsController < ApplicationController
     service.call(@board)
 
     if service.successful?
-        render json: { message: 'Board Deleted.' }, status: :ok
+      render json: { message: 'Board Deleted.' }, status: :ok
     else
-        render json: { errors: service.errors }, status: :unprocessable_entity
+      render json: { errors: service.errors }, status: :unprocessable_entity
     end
   end
 
   private
+
   def board_params
     params.require(:board).permit(policy(Board).permitted_attributes)
   end
@@ -124,6 +121,4 @@ class BoardsController < ApplicationController
   def get_board
     @board = Board.find_by(id: params[:id])
   end
-  
-
 end

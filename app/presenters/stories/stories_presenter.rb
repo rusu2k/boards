@@ -1,29 +1,29 @@
 class Stories::StoriesPresenter
-    attr_reader :errors
+  attr_reader :errors
 
-    def call(stories)
-        @errors = []
-        result = []
+  def call(stories)
+    @errors = []
+    result = []
 
-        @errors << "No stories found" if stories.blank?
+    @errors << 'No stories found' if stories.blank?
 
-        return if !successful?
-        story_presenter = Stories::StoryPresenter.new
-        
+    return unless successful?
 
-        stories.each do |story|
-            story_presenter.call(story)
-            check_story_presenter(story_presenter)
-            result << story_presenter.render
-        end
-        result
+    story_presenter = Stories::StoryPresenter.new
+
+    stories.each do |story|
+      story_presenter.call(story)
+      check_story_presenter(story_presenter)
+      result << story_presenter.render
     end
-
-    def check_story_presenter(story_presenter)
-        @errors << story_presenter.errors unless story_presenter.successful?
-    end
-    
-    def successful?
-        @errors.blank?
-    end
+    result
   end
+
+  def check_story_presenter(story_presenter)
+    @errors << story_presenter.errors unless story_presenter.successful?
+  end
+
+  def successful?
+    @errors.blank?
+  end
+end

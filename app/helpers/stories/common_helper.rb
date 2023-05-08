@@ -1,5 +1,5 @@
 module Stories::CommonHelper
-    def model
-        Story
-    end
+  def model
+    Story
+  end
 end

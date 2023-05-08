@@ -1,3 +1,3 @@
 class Columns::ColumnsCollector < BaseCollector
-    include Columns::CommonHelper
+  include Columns::CommonHelper
 end
