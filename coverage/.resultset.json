@@ -484,8 +484,48 @@
           null
         ]
       },
+      "/mnt/d/files/boards/final/config/initializers/rswag_api.rb": {
+        "lines": [
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "/mnt/d/files/boards/final/config/initializers/rswag_ui.rb": {
+        "lines": [
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
       "/mnt/d/files/boards/final/config/routes.rb": {
         "lines": [
+          1,
+          1,
           1,
           1,
           1,
@@ -578,11 +618,11 @@
           null,
           null,
           1,
-          1,
+          0,
           null,
           null,
           1,
-          2,
+          0,
           null,
           null,
           null
@@ -597,41 +637,50 @@
           null
         ]
       },
-      "/mnt/d/files/boards/final/app/services/base_common.rb": {
+      "/mnt/d/files/boards/final/spec/requests/boards_spec.rb": {
         "lines": [
           1,
-          1,
-          null,
-          1,
-          0,
-          0,
-          0,
-          0,
-          null,
           null,
           1,
           1,
-          null,
-          null,
+          1,
+          1,
+          1,
+          1,
+          1,
           1,
           1,
           null,
           null,
-          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
           1,
           null,
           null,
           1,
-          null,
-          null,
           1,
-          2,
+          null,
           null,
           null,
           null
         ]
       }
     },
-    "timestamp": 1683279212
+    "timestamp": 1683529973
   }
 }

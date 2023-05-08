@@ -13,7 +13,7 @@ class Users::UserPresenter
                 "id": board.id,
                 "name": board.title,
                 "stories": board.stories.map do |story|
-                    story = Stories::StoryPresenter.new.call(story.id).render
+                    story = Stories::StoryPresenter.new.call(story).render
                 end
              }
         end

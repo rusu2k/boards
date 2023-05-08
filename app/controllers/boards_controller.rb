@@ -1,6 +1,16 @@
 class BoardsController < ApplicationController
     before_action :authenticate_user!
     before_action :get_board, only: [:show, :update, :destroy]
+
+  # # GET /boards
+  # swagger_controller :boards, "Boards Management"
+
+  # # GET /boards
+  # swagger_api :index do
+  #   summary "Returns a list of boards"
+  #   response :ok
+  #   response :bad_request
+  # end
     
   def index
     authorize Board
@@ -14,6 +24,14 @@ class BoardsController < ApplicationController
       render json: { errors: service.errors + presenter.errors }, status: :bad_request
     end
   end
+
+  # # GET /boards/:id
+  # swagger_api :show do
+  #   summary "Returns a board"
+  #   param :path, :id, :integer, :required, "Board ID"
+  #   response :ok
+  #   response :not_found
+  # end
   
   def show
     authorize @board
@@ -24,6 +42,14 @@ class BoardsController < ApplicationController
         render json: { errors: presenter.errors }, status: :not_found
     end
   end
+
+  # # POST /boards
+  # swagger_api :create do
+  #   summary "Creates a new board"
+  #   param :form, :name, :string, :required, "Board Name"
+  #   response :created
+  #   response :unprocessable_entity
+  # end
   
   def create
     authorize Board
@@ -43,6 +69,15 @@ class BoardsController < ApplicationController
     end
 
   end
+
+  # # PATCH/PUT /boards/:id
+  # swagger_api :update do
+  #   summary "Updates a board"
+  #   param :path, :id, :integer, :required, "Board ID"
+  #   param :form, :name, :string, :optional, "Board Name"
+  #   response :accepted
+  #   response :unprocessable_entity
+  # end
   
   def update
     authorize @board
@@ -60,6 +95,14 @@ class BoardsController < ApplicationController
     end
 
   end
+
+  # # DELETE /boards/:id
+  # swagger_api :destroy do
+  #   summary "Deletes a board"
+  #   param :path, :id, :integer, :required, "Board ID"
+  #   response :ok
+  #   response :unprocessable_entity
+  # end
 
   def destroy
     authorize @board
